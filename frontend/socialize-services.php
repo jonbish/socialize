@@ -464,7 +464,7 @@ class SocializeServices {
 		}
                 $this->enqueue_js('pinterest-button', 'http://assets.pinterest.com/js/pinit.js', $socialize_settings);
 
-                $buttonCode .= '<a href="http://pinterest.com/pin/create/button/?url='.urlencode(get_permalink()).'&';
+                $buttonCode = '<a href="http://pinterest.com/pin/create/button/?url='.urlencode(get_permalink()).'&';
                 if ( has_post_thumbnail()) {
                    $buttonCode .= 'media=' . urlencode(get_the_post_thumbnail($post->ID, 'thumbnail')); 
                  }
@@ -490,8 +490,7 @@ class SocializeServices {
 	/* returns the shortened url */
 	function get_bitly_short_url($url,$login,$appkey,$format='txt') {
 	  $connectURL = 'http://api.bit.ly/v3/shorten?login='.$login.'&apiKey='.$appkey.'&uri='.urlencode($url).'&format='.$format;
-	  $buttons = apply_filters( 'socialize-get_bitly_short_url', $buttons );
-          return wp_remote_fopen($connectURL);
+          return apply_filters( 'socialize-get_bitly_short_url', wp_remote_fopen($connectURL));
 	}
         
         function get_button_array($location){

@@ -141,11 +141,11 @@ class SocializeAdmin {
 		$socialize_buttons = $this->sort_buttons_array($socializemeta);
 
 		$default_content .= '<input type="hidden" name="socialize_settings_noncename" id="socialize_settings_noncename" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
-		$default_content .= '<div id="socialize-div1"><strong>InLine Social Buttons</strong><br /><ul id="inline-sortable">';
+		$default_content .= '<div id="socialize-div1"><strong>InLine Buttons</strong><br /><ul id="inline-sortable">';
 		foreach ($socialize_buttons[0] as $socialize_button){
 			$default_content .= '<li class="ui-state-default"><label class="selectit"><input value="'. $socialize_button.'" type="checkbox" name="socialize_buttons[]" id="post-share-'. $socialize_button.'"'. checked(in_array($socialize_button,$socializemeta), true, false).'/> <span>'. __($socialize_buttons[2][$socialize_button]).'</span></label></li>';
 		}
-		$default_content .= '</ul></div><div id="socialize-div2"><strong>Alert Box Social Buttons</strong><br /><ul id="alert-sortable">';
+		$default_content .= '</ul></div><div id="socialize-div2"><strong>Alert Box Buttons</strong><br /><ul id="alert-sortable">';
 		foreach ($socialize_buttons[1] as $socialize_button){
 			$default_content .= '<li class="ui-state-default"><label class="selectit"><input value="' .  $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' .  $socialize_button . '"' .  checked(in_array($socialize_button,$socializemeta), true, false) . '/> <span>' .  __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
 		}
@@ -174,7 +174,7 @@ class SocializeAdmin {
 
 		echo '<div class="socialize-div3" style="width:100%;">';
 		echo '	<strong>Hide Alert Box</strong><br />';
-		echo '	<label class="selectit"><input value="21" type="checkbox" name="hide_alert" id="post-share-alert"'. checked(in_array(21,$socializemeta), true).'/>'. __('Hide alert box below this post').'</label>	';
+		echo '	<label class="selectit"><input value="21" type="checkbox" name="hide_alert" id="post-share-alert"'. checked(in_array(21,$socializemeta), true).'/> '. __('Hide alert box below this post').'</label>	';
 		echo '</div>';
 		echo '<div class="clear"></div>';
 
