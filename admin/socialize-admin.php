@@ -3,33 +3,57 @@ class SocializeAdmin {
 
 	function SocializeAdmin() {
 		if(is_admin()){
-			add_action('admin_menu', array(&$this, 'add_socialize_options_subpanel'));
+                        add_action('admin_menu', array(&$this, 'settings_subpanel'));
 			add_action('admin_menu', array(&$this, 'socialize_add_meta_box'));
 			add_action('admin_print_scripts', array(&$this, 'add_socialize_admin_scripts'));
 			add_action('admin_print_styles', array(&$this, 'add_socialize_admin_styles'));
-
 			add_action('save_post', array(&$this, 'socialize_admin_process'));
 		}
 	}
-	//=============================================
-	// admin options panel
-	//=============================================
-	function add_socialize_options_subpanel() {
-	  if (function_exists('add_menu_page')) {
-		  global $submenu;
-		  add_menu_page('Socialize', 'Socialize', 'manage_options', 'socialize_settings', array(&$this, 'socialize_settings_admin'), SOCIALIZE_URL.'images/socialize-icon.png');
-		  add_submenu_page('socialize_settings','Display','Display','manage_options', 'socialize_display', array(&$this, 'socialize_display_admin'));
-		  add_submenu_page('socialize_settings','Buttons','Buttons','manage_options', 'socialize_services', array(&$this, 'socialize_services_admin'));
-		  $submenu['socialize_settings'][0][0] = 'Settings';
-	  }
-	}
+
+        function settings_subpanel() {
+            if (function_exists('add_options_page')) {
+                add_options_page('Socialize', 'Socialize', 'manage_options', 'socialize', array( &$this, 'socialize_admin'));
+            }
+        }
+
+        function socialize_admin(){
+            $tabs = self::admin_tabs();
+            if(isset($_GET['tab'])){
+                $tabs[$_GET['tab']]['function'];
+                call_user_func($tabs[$_GET['tab']]['function']);
+            } else {
+                //print_r($tabs['general']['function']);
+                call_user_func($tabs['general']['function']);
+            }
+        }
+
+        function admin_tabs(){
+            $tabs = array(
+                    'general' => array(
+                        'title' => __( 'General', 'socialize' ),
+                        'function' => array(&$this, 'socialize_settings_admin')
+                        ),
+                    'display' => array(
+                        'title' => __( 'Display', 'socialize' ),
+                        'function' => array(&$this, 'socialize_display_admin')
+                        ),
+                    'buttons' => array(
+                        'title' => __( 'Buttons', 'socialize' ),
+                        'function' => array(&$this, 'socialize_services_admin')
+                        )
+            );
+
+            $tabs = apply_filters('socialize_settings_tabs_array', $tabs);
+            return $tabs;
+        }
 
 	//=============================================
 	// Load admin styles
 	//=============================================
 	function add_socialize_admin_styles() {
 		global $pagenow;
-		if ( $pagenow == 'admin.php' && isset($_GET['page']) && strstr($_GET['page'],"socialize_")) {
+		if ( $pagenow == 'options-general.php' && isset($_GET['page']) && strstr($_GET['page'],"socialize")) {
 			wp_enqueue_style('dashboard');
 			wp_enqueue_style('global');
 			wp_enqueue_style('wp-admin');
@@ -43,15 +67,15 @@ class SocializeAdmin {
 	//=============================================
 	function add_socialize_admin_scripts() {
 		global $pagenow;
-		if ( $pagenow == 'admin.php' && isset($_GET['page']) && strstr($_GET['page'],"socialize_")) {
+		if ( $pagenow == 'options-general.php' && isset($_GET['page']) && strstr($_GET['page'],"socialize")) {
 			wp_enqueue_script('postbox');
 			wp_enqueue_script('dashboard');
 			//wp_enqueue_script('custom-background');
 		}
-		if(isset($_GET['page']) && $_GET['page'] == 'socialize_display'){
+		if(isset($_GET['tab']) && $_GET['tab'] == 'display'){
                         wp_enqueue_script('farbtastic');
 			wp_enqueue_script('socialize-admin-color', SOCIALIZE_URL . 'admin/js/socialize-admin-color-picker.js');
-		} else if(isset($_GET['page']) && $_GET['page'] == 'socialize_services'){
+		} else if(isset($_GET['tab']) && $_GET['tab'] == 'buttons'){
 			wp_enqueue_script('socialize-admin-form', SOCIALIZE_URL . 'admin/js/socialize-admin-form.js');
 		}
 		wp_enqueue_script('socialize-admin-sortable', SOCIALIZE_URL . 'admin/js/socialize-admin-sortable.js');
@@ -775,7 +799,26 @@ class SocializeAdmin {
 	?>
         <div class="wrap">
             <div class="dashboard-widgets-wrap">
-                <h2><?php echo $title; ?></h2>
+                <div class="socialize-icon icon32"></div>
+                <h2 class="nav-tab-wrapper socialize-tab-wrapper">
+                    <?php
+                    $tabs = self::admin_tabs();
+
+                    if(isset($_GET['tab'])){
+                        $current_tab = $_GET['tab'];
+                    } else {
+                        $current_tab = 'general';
+                    }
+
+                    foreach ( $tabs as $name => $tab_data ) {
+                            echo '<a href="' . admin_url( 'options-general.php?page=socialize&tab=' . $name ) . '" class="nav-tab ';
+                            if( $current_tab == $name ) echo 'nav-tab-active';
+                                echo '">' . $tab_data['title'] . '</a>';
+                    }
+
+                    do_action( 'socialize_settings_tabs' );
+                    ?>
+                </h2>
                 <form method="post" action="">
                     <div id="dashboard-widgets" class="metabox-holder">
                         <div class="postbox-container" style="width:60%;">

@@ -4,6 +4,9 @@
 	background:#eaf2fa;
 	border:2px dashed #ccdff3;
 }
+.socialize-icon{
+    background:url('../../images/openshareicon-32x32.png') top center no-repeat;
+}
 #socialize-div1, #socialize-div2 {
 	width:50%;
 	float: left;

@@ -1,3 +1,35 @@
+<h2 class="nav-tab-wrapper woo-nav-tab-wrapper">
+    <?php
+                $tabs = array(
+                        'general' => __( 'General', 'woocommerce' ),
+                        'catalog' => __( 'Catalog', 'woocommerce' ),
+                        'pages' => __( 'Pages', 'woocommerce' ),
+                        'inventory' => __( 'Inventory', 'woocommerce' ),
+                        'tax' => __( 'Tax', 'woocommerce'),
+                        'shipping' => __( 'Shipping', 'woocommerce' ),
+                        'payment_gateways' => __( 'Payment Gateways', 'woocommerce' ),
+                        'email' => __( 'Emails', 'woocommerce' ),
+                        'integration' => __( 'Integration', 'woocommerce' )
+                );
+
+                $tabs = apply_filters('woocommerce_settings_tabs_array', $tabs);
+
+                foreach ( $tabs as $name => $label ) {
+                        echo '<a href="' . admin_url( 'admin.php?page=woocommerce&tab=' . $name ) . '" class="nav-tab ';
+                        if( $current_tab == $name ) echo 'nav-tab-active';
+                        echo '">' . $label . '</a>';
+                }
+
+                do_action( 'woocommerce_settings_tabs' );
+        ?>
+</h2>
+
+
+
+
+
+
+
 <form method="post" id="mainform" action="">
 			<div class="icon32 icon32-woocommerce-settings" id="icon-woocommerce"><br></div><h2 class="nav-tab-wrapper woo-nav-tab-wrapper">
                             <?php
