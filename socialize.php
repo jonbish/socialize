@@ -119,13 +119,15 @@ class socializeWP {
                 "socialize_display_custom" => array(),
                 "socialize_og" => "on",
                 "socialize_fb_pageid" => "on",
-                "pinterest_counter" => "vertical"
+                "pinterest_counter" => "vertical",
+                "buffer_counter" => "vertical"
             );
             update_option('socialize_settings10', $tmp);
         }
         // 2.1 update
-        if (empty($tmp['pinterest_counter'])) {
+        if (empty($tmp['buffer_counter'])) {
             $tmp['pinterest_counter'] = 'vertical';
+            $tmp['buffer_counter'] = 'vertical';
             update_option('socialize_settings10', $tmp);
         }
         // 2.0.3 update
@@ -190,8 +192,8 @@ class socializeWP {
     }
 
 }
-
-socializeWP::init();
+$socializeWP = new socializeWP();
+$socializeWP->init();
 // RegisterDefault settings
-register_activation_hook(__FILE__, array(new socializeWP(), 'add_defaults_socialize'));
+register_activation_hook(__FILE__, array($socializeWP, 'add_defaults_socialize'));
 ?>

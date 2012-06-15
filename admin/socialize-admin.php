@@ -473,6 +473,7 @@ class SocializeAdmin {
         $reddit_buttons_content = "";
         $stumbleupon_buttons_content = "";
         $pinterest_buttons_content = "";
+        $buffer_buttons_content  = "";
         $google_plusone_buttons_content = "";
         $yahoo_buttons_content = "";
         $linkedin_buttons_content = "";
@@ -496,7 +497,8 @@ class SocializeAdmin {
         $default_content .= '</ul></div><div class="clear"></div><strong>* You can rearrange the buttons by <em>clicking</em> and <em>dragging</em></strong>';
 
         $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Button Setup', $default_content);
-
+        
+        // Facebook
         $facebook_buttons_content .= '<p>' . __("Choose which Facebook share button to display") . ':<br />
 					<label><input type="radio" value="official-like" name="socialize_fbWidget" ' . checked($socialize_settings['socialize_fbWidget'], 'official-like', false) . '/> <a href="http://developers.facebook.com/docs/reference/plugins/like" target="_blank">Official Like Button</a></label><br />
 					<label><input type="radio" value="fbshareme" name="socialize_fbWidget" ' . checked($socialize_settings['socialize_fbWidget'], 'fbshareme', false) . '/> <a href="http://www.fbshare.me/" target="_blank">fbShare.me</a></label><br /></p>';
@@ -536,7 +538,8 @@ class SocializeAdmin {
         $facebook_buttons_content .= '</select></p>';
         $facebook_buttons_content .= '</div>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-facebook', 'Facebook Button Settings', $facebook_buttons_content);
-
+        
+        // Twitter
         $twiter_buttons_content .= '<p>' . __("Choose which Twitter retweet button to display") . ':<br />
 					<label><input type="radio" value="official" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'official', false) . '/> <a href="http://twitter.com/goodies/tweetbutton" target="_blank">Official Tweet Button</a></label><br />
 					<label><input type="radio" value="tweetmeme" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'tweetmeme', false) . '/> <a href="http://tweetmeme.com/" target="_blank">TweetMeme</a></label><br />
@@ -613,7 +616,8 @@ class SocializeAdmin {
 					<small>Background color Backtype Tweetcount Button</small></p>';
         $twiter_buttons_content .= '</div>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-twitter', 'Twitter Button Settings', $twiter_buttons_content);
-
+        
+        // Reddit
         $reddit_buttons_content .= '<p>' . __("Choose which Reddit share button to display") . ':<br />
 					<select name="reddit_type">';
         foreach (array('compact' => '1', 'normal' => '2', 'big' => '3') as $reddit_type => $reddit_type_value) {
@@ -628,7 +632,8 @@ class SocializeAdmin {
 					<small>Background border color of Reddit Button</small></p>';
 
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-reddit', 'Reddit Button Settings', $reddit_buttons_content);
-
+        
+        // Stumbleupon
         $stumbleupon_buttons_content .= '<p>' . __("Choose which StumbleUpon button to display") . ':<br />
 					<select name="su_type">';
         foreach (array('horizontal square' => '1', 'horizontal rounded' => '2', 'horizontal simple' => '3', 'vertical' => '5', 'round large' => '6', 'round small' => '4') as $su_type => $su_type_value) {
@@ -645,7 +650,17 @@ class SocializeAdmin {
         }
         $pinterest_buttons_content .= '</select></p>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-pinterest', 'Pinterest Button Settings', $pinterest_buttons_content);
-
+        
+        // Buffer
+        $buffer_buttons_content .= '<p>' . __("Choose which Buffer button to display") . ':<br />
+					<select name="buffer_counter">';
+        foreach (array('vertical', 'horizontal', 'none') as $buffer_counter) {
+            $buffer_buttons_content .= '<option value="' . $buffer_counter . '" ' . selected($socialize_settings['buffer_counter'], $buffer_counter, false) . '>' . $buffer_counter . '</option>';
+        }
+        $buffer_buttons_content .= '</select></p>';
+        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-buffer', 'Buffer Button Settings', $buffer_buttons_content);
+        
+        // Google Plus
         $google_plusone_buttons_content .= '<p>' . __("Choose which Google +1 button to display") . ':<br />
 					<select name="plusone_style">';
         foreach (array('small', 'medium', 'standard', 'tall') as $plusone_style) {
@@ -654,15 +669,7 @@ class SocializeAdmin {
         $google_plusone_buttons_content .= '</select></p>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-google-plusone', 'Google +1 Button Settings', $google_plusone_buttons_content);
 
-
-        $yahoo_buttons_content .= '<p>' . __("Choose which Yahoo Buzz button to display") . ':<br />
-					<select name="yahoo_badgetype">';
-        foreach (array('square', 'text-votes', 'small-votes', 'medium-votes', 'large-votes', 'logo', 'text', 'small', 'medium', 'large') as $yahoo_badgetype) {
-            $yahoo_buttons_content .= '<option value="' . $yahoo_badgetype . '" ' . selected($socialize_settings['yahoo_badgetype'], $yahoo_badgetype, false) . '>' . $yahoo_badgetype . '</option>';
-        }
-        $yahoo_buttons_content .= '</select></p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-yahoo', 'Yahoo Buzz Button Settings', $yahoo_buttons_content);
-
+        // LinkedIn
         $linkedin_buttons_content .= '<p>' . __("Choose which LinkedIn button to display") . ':<br />
 					<select name="linkedin_counter">';
         foreach (array('top', 'right', 'none') as $linkedin_counter) {
@@ -670,7 +677,8 @@ class SocializeAdmin {
         }
         $linkedin_buttons_content .= '</select></p>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-linkedin', 'LinkedIn Button Settings', $linkedin_buttons_content);
-
+        
+        // Digg
         $digg_buttons_content .= '<p>' . __("Choose which Digg button to display") . ':<br />
 					<select name="digg_size">';
         foreach (array('Wide' => 'DiggWide', 'Medium' => 'DiggMedium', 'Compact' => 'DiggCompact', 'Icon' => 'DiggIcon') as $digg_size => $digg_size_value) {
@@ -789,6 +797,12 @@ class SocializeAdmin {
                 }
                 if (isset($_POST['linkedin_counter'])) {
                     $socialize_settings['linkedin_counter'] = $_POST['linkedin_counter'];
+                }
+                if (isset($_POST['pinterest_counter'])) {
+                    $socialize_settings['pinterest_counter'] = $_POST['pinterest_counter'];
+                }
+                if (isset($_POST['buffer_counter'])) {
+                    $socialize_settings['buffer_counter'] = $_POST['buffer_counter'];
                 }
 
                 echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Socialize settings updated.</p></div>\n";
@@ -978,7 +992,7 @@ class SocializeAdmin {
         $service_names_array[7] = "StumbleUpon";
         $service_names_array[8] = "Delicious";
         //$service_names_array[9] = "Google Buzz";
-        $service_names_array[10] = "Yahoo Buzz";
+        //$service_names_array[10] = "Yahoo Buzz";
         $service_names_array[11] = "Twitter";
         $service_names_array[12] = "Facebook";
         $service_names_array[13] = "Digg";
@@ -988,7 +1002,7 @@ class SocializeAdmin {
         $service_names_array[17] = "StumbleUpon";
         $service_names_array[18] = "Delicious";
         //$service_names_array[19] = "Google Buzz";
-        $service_names_array[20] = "Yahoo Buzz";
+        //$service_names_array[20] = "Yahoo Buzz";
         $service_names_array[21] = "";
         $service_names_array[22] = "LinkedIn";
         $service_names_array[23] = "LinkedIn";
@@ -996,6 +1010,8 @@ class SocializeAdmin {
         $service_names_array[25] = "Google +1";
         $service_names_array[26] = "Pinterest";
         $service_names_array[27] = "Pinterest";
+        $service_names_array[9] = "Buffer";
+        $service_names_array[19] = "Buffer";
 
         $service_names_array = apply_filters('socialize-sort_buttons_array', $service_names_array);
 

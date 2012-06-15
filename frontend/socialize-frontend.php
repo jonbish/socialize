@@ -50,6 +50,7 @@ class SocializeFrontEnd {
                 break;
             case 9:
             case 19:
+                return SocializeServices::createSocializeBuffer();
                 // RIP Google Buzz
                 break;
             case 10:

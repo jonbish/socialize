@@ -288,8 +288,7 @@ class SocializeServices {
         switch ($service) {
             case "":
                 if (!isset($socialize_settings)) {
-                    $socialize_settings = array();
-                    $socialize_settings = get_option('socialize_settings10');
+                    $socialize_settings = socializeWP::get_options();
                 }
                 $reddit_type = $socialize_settings['reddit_type'];
                 $reddit_bgcolor = $socialize_settings['reddit_bgcolor'];
@@ -349,8 +348,7 @@ class SocializeServices {
         }
         switch ($service) {
             case "":
-                $socialize_settings = array();
-                $socialize_settings = get_option('socialize_settings10');
+                $socialize_settings = socializeWP::get_options();
                 $su_type = $socialize_settings['su_type'];
 
                 break;
@@ -358,8 +356,14 @@ class SocializeServices {
                 $su_type = $service_options['su_type'];
                 break;
         }
-        $buttonCode =
-                '<script src="http://www.stumbleupon.com/hostedbadge.php?s=' . $su_type . '&r=' . get_permalink() . '"></script>';
+        $buttonCode = '<su:badge layout="' . $su_type . '" location="' . get_permalink() . '"></su:badge>';
+        $buttonCode = '<script type="text/javascript">
+          (function() {
+            var li = document.createElement(\'script\'); li.type = \'text/javascript\'; li.async = true;
+            li.src = \'https://platform.stumbleupon.com/1/widgets.js\';
+            var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(li, s);
+          })();
+        </script>';
         $buttonCode = apply_filters('socialize-stumbleupon', $buttonCode);
         return $buttonCode;
     }
@@ -390,8 +394,7 @@ class SocializeServices {
         switch ($service) {
             case "":
                 if (!isset($socialize_settings)) {
-                    $socialize_settings = array();
-                    $socialize_settings = get_option('socialize_settings10');
+                    $socialize_settings = socializeWP::get_options();
                 }
                 $linkedin_counter = $socialize_settings['linkedin_counter'];
                 break;
@@ -405,7 +408,7 @@ class SocializeServices {
         return $buttonCode;
     }
 
-    // Create LinkedIn button
+    // Create Pinterest button
     function createSocializePinterest($service = "", $service_options = array(), $socialize_settings = null) {
         if (!isset($socialize_settings)) {
             $socialize_settings = socializeWP::get_options();
@@ -414,8 +417,7 @@ class SocializeServices {
         switch ($service) {
             case "":
                 if (!isset($socialize_settings)) {
-                    $socialize_settings = array();
-                    $socialize_settings = get_option('socialize_settings10');
+                    $socialize_settings = socializeWP::get_options();
                 }
                 $pinterest_counter = $socialize_settings['pinterest_counter'];
                 break;
@@ -435,6 +437,40 @@ class SocializeServices {
         $buttonCode = apply_filters('socialize-pinterest', $buttonCode);
         return $buttonCode;
     }
+    
+    // Create Buffer button
+    function createSocializeBuffer($service = "", $service_options = array(), $socialize_settings = null) {
+        if (!isset($socialize_settings)) {
+            $socialize_settings = socializeWP::get_options();
+        }
+        global $post;
+        switch ($service) {
+            case "":
+                if (!isset($socialize_settings)) {
+                    $socialize_settings = socializeWP::get_options();
+                }
+                $socialize_tweetcount_via = $socialize_settings['socialize_tweetcount_via'];
+                $buffer_counter = $socialize_settings['buffer_counter'];
+                break;
+            case "official":
+                $buffer_counter = $service_options['buffer_counter'];
+                break;
+        }
+        self::enqueue_js('buffer-button', 'http://static.bufferapp.com/js/button.js', $socialize_settings);
+        
+        $buttonCode = '<a href="http://bufferapp.com/add" class="buffer-add-button"';
+        $buttonCode .= ' data-text="' . urlencode(get_the_title()) . '"';
+        $buttonCode .= ' data-url="' . urlencode(get_permalink()) . '"';
+        $buttonCode .= ' data-count="'.$buffer_counter.'"';
+        $buttonCode .= ' data-via="' . $socialize_tweetcount_via . '"';
+        if (has_post_thumbnail()) {
+            $buttonCode .= ' data-picture="' . urlencode(get_the_post_thumbnail($post->ID, 'thumbnail')) . '"';
+        }
+        $buttonCode .= '>Buffer</a>';
+        $buttonCode = apply_filters('socialize-buffer', $buttonCode);
+        return $buttonCode;
+    }
+    
 
     function get_short_url($url, $socialize_settings = null) {
         if (!isset($socialize_settings)) {
@@ -457,10 +493,10 @@ class SocializeServices {
     function get_button_array($location) {
         switch ($location) {
             case 'inline':
-                $buttons = array(1, 2, 3, 4, 5, 6, 7, 8, 22, 24, 26);
+                $buttons = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 24, 26);
                 break;
             case 'action':
-                $buttons = array(11, 12, 13, 14, 15, 16, 17, 18, 23, 25, 27);
+                $buttons = array(11, 12, 13, 14, 15, 16, 17, 18, 19, 23, 25, 27);
                 break;
         }
         $buttons = apply_filters('socialize-get_button_array', $buttons);
