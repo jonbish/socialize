@@ -4,7 +4,7 @@ Donate link: http://www.jonbishop.com/donate/
 Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, bookmarks menu, social, social bookmarking, reddit, sexybookmarks, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, google plus, buddypress
 Requires at least: 2.7
 Tested up to: 3.4
-Stable tag: 2.1b1
+Stable tag: 2.1
 
 Provides an easy way to selectively add actionable social bookmarks to your posts content or below the post in a 'Call To Action' box.
 
@@ -21,15 +21,16 @@ The plugin was designed to make managing and adding actionable social bookmarks 
 
 You are also provided with a box at the bottom of your posts that asks readers to subscribe and comment. This text can be edited in the 'Socialize Admin Page' and on individual posts/pages. You can also selectively display social bookmarks in this box the same way you go about inserting bookmarks in content. This is a great place to ask your readers to do something, like check out one of your services or to leave a comment and subscribe.
 
-Furthermore, you can choose to display bookmarks in the content on all pages or just on single pages. You can also choose to hide the box that displays beneath the posts by default.
+All buttons and call to action areas can be easily displayed and hidden at will. You can also change the call to action template and even overwrite the default CSS.
 
-= New in Version 2.0 =
-
-* Automatically inserts open graph data into head of site
-* Can now sort buttons
+= Features =
+* 12 popular buttons including Pinterest and Buffer
+* Automatically insert Facebook and open graph data into head of site
+* Easily change button order on individual pages
 * Custom post type support
-* More display and placement options
+* Lots of display and placement options
 * Bitly integration
+* Actions and filter for developers
 
 == Installation ==
 
