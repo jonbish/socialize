@@ -472,7 +472,7 @@ class SocializeServices {
         self::enqueue_js('buffer-button', 'http://static.bufferapp.com/js/button.js', $socialize_settings);
         
         $buttonCode = '<a href="http://bufferapp.com/add" class="buffer-add-button"';
-        $buttonCode .= ' data-text="' . urlencode(get_the_title()) . '"';
+        $buttonCode .= ' data-text="' . get_the_title() . '"';
         $buttonCode .= ' data-url="' . urlencode(get_permalink()) . '"';
         $buttonCode .= ' data-count="'.$buffer_counter.'"';
         $buttonCode .= ' data-via="' . $socialize_tweetcount_via . '"';
