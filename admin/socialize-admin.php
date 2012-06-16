@@ -275,7 +275,8 @@ class SocializeAdmin {
 					<label>Horizontal<input type="radio" value="horizontal" name="socialize_position" ' . checked($socialize_settings['socialize_position'], 'horizontal', false) . '/></label>
 					<small>Choose whether to display the buttons in a line vertically or horizontally.</small></p>';
 
-        $general_content .= '<p><strong>' . __("Show/Hide Inline Buttons") . '</strong></p>';
+        $general_content .= '<p><strong>' . __("Show/Hide Buttons") . '</strong><br />
+            <small>This will show or hide both inline buttons and the call to action box on selected post types.</small></p>';
         $general_content .= '<p><input type="checkbox" name="socialize_display_front" ' . checked($socialize_settings['socialize_display_front'], 'on', false) . ' />
 					Front Page</p>';
         $general_content .= '<p><input type="checkbox" name="socialize_display_archives" ' . checked($socialize_settings['socialize_display_archives'], 'on', false) . ' />
@@ -293,7 +294,7 @@ class SocializeAdmin {
 
         $general_content .= '<p><input type="checkbox" name="socialize_display_feed" ' . checked($socialize_settings['socialize_display_feed'], 'on', false) . ' />
 					Feeds Entries</p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-general', 'Inline Buttons Display Settings', $general_content);
+        $wrapped_content .= self::socialize_postbox('socialize-settings-general', 'Button Display Settings', $general_content);
 
         $alert_content .= '<p><strong>' . __("'Call To Action' Box Background Color") . '</strong><br />
 					<input type="text" name="socialize_alert_bg" id="background-color" value="' . $socialize_settings['socialize_alert_bg'] . '" />
