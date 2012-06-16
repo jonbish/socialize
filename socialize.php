@@ -32,12 +32,14 @@ class socializeWP {
 
     private static $socialize_settings;
     public static  $socializeFooterJS;
+    public static  $socializeFooterScript;
     //=============================================
     // Hooks and Filters
     //=============================================
     function init() {
         global $socializeWPadmin, $socializeWPfrontend;
         self::$socializeFooterJS = array();
+        self::$socializeFooterScript = array();
         if (is_admin()) {
             $socializeWPadmin = new SocializeAdmin();
         } else {
@@ -65,7 +67,7 @@ class socializeWP {
         if (!is_array($tmp)) {
             $tmp = array(
                 "socialize_installed" => "on",
-                "socialize_version" => "23",
+                "socialize_version" => "24",
                 "socialize_alert_bg" => "#FFEAA8",
                 "socialize_alert_border_size" => "2px",
                 "socialize_alert_border_style" => "solid",
@@ -120,14 +122,16 @@ class socializeWP {
                 "socialize_og" => "on",
                 "socialize_fb_pageid" => "on",
                 "pinterest_counter" => "vertical",
-                "buffer_counter" => "vertical"
+                "buffer_counter" => "vertical",
+                "fb_sendbutton" => "false"
             );
             update_option('socialize_settings10', $tmp);
         }
         // 2.1 update
-        if (empty($tmp['buffer_counter'])) {
+        if (empty($tmp['fb_sendbutton'])) {
             $tmp['pinterest_counter'] = 'vertical';
             $tmp['buffer_counter'] = 'vertical';
+            $tmp['fb_sendbutton'] = 'false';
             update_option('socialize_settings10', $tmp);
         }
         // 2.0.3 update

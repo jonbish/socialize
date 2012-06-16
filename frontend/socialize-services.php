@@ -14,8 +14,9 @@ class SocializeServices {
     function socialize_footer_script() {
         $socializeFooterJS = apply_filters('socialize-footerjs', socializeWP::$socializeFooterJS);
         wp_print_scripts(array_unique($socializeFooterJS));
-        echo 'shoot footer';
-        die();
+        foreach(socializeWP::$socializeFooterScript as $script){
+            echo $script;
+        }
     }
 
     function socialize_head_scripts() {
@@ -24,6 +25,11 @@ class SocializeServices {
         if ($socialize_settings['socialize_twitterWidget'] == 'topsy') {
             wp_enqueue_script('topsy_button', 'http://cdn.topsy.com/topsy.js');
         }
+    }
+    
+    function enqueue_script($script) {
+        if(!in_array($script, socializeWP::$socializeFooterScript))
+            array_push(socializeWP::$socializeFooterScript, $script);
     }
 
     function enqueue_js($scriptname, $scriptlink, $socialize_settings) {
@@ -188,9 +194,9 @@ class SocializeServices {
                 break;
         }
 
-        $buttonCode =
+        $inlinescript =
                 '<script type="text/javascript">';
-        $buttonCode .=
+        $inlinescript .=
                 "<!-- 
 		(function() {
 		var s = document.createElement('SCRIPT'), s1 = document.getElementsByTagName('SCRIPT')[0];
@@ -201,7 +207,8 @@ class SocializeServices {
 		})();
 		//-->
 		</script>";
-        $buttonCode .=
+        self::enqueue_script($inlinescript);
+        $buttonCode =
                 '<a class="DiggThisButton ' . $digg_size . '" href="http://digg.com/submit?url=' . urlencode(get_permalink()) . '"></a>';
         $buttonCode = apply_filters('socialize-digg', $buttonCode);
         return $buttonCode;
@@ -221,6 +228,7 @@ class SocializeServices {
                 $fb_verb = urlencode($socialize_settings['fb_verb']);
                 $fb_font = urlencode($socialize_settings['fb_font']);
                 $fb_color = urlencode($socialize_settings['fb_color']);
+                $fb_sendbutton = urlencode($socialize_settings['fb_sendbutton']);
                 break;
             case "official-like":
                 $socialize_fbWidget = $service;
@@ -230,6 +238,7 @@ class SocializeServices {
                 $fb_verb = urlencode($service_options['fb_verb']);
                 $fb_font = urlencode($service_options['fb_font']);
                 $fb_color = urlencode($service_options['fb_color']);
+                $fb_sendbutton = urlencode($socialize_settings['fb_sendbutton']);
                 break;
             case "fbshareme":
                 $socialize_fbWidget = $service;
@@ -238,15 +247,19 @@ class SocializeServices {
 
         if ($socialize_fbWidget == "official-like") {
             // box count
-            $buttonCode = '<iframe src="http://www.facebook.com/plugins/like.php?';
-            $buttonCode .= 'href=' . get_permalink() . '&amp;';
-            $buttonCode .= 'layout=' . $fb_layout . '&amp;';
-            $buttonCode .= 'show_faces=' . $fb_showfaces . '&amp;';
-            $buttonCode .= 'width=' . $fb_width . '&amp;';
-            $buttonCode .= 'action=' . $fb_verb . '&amp;';
-            $buttonCode .= 'font=' . $fb_font . '&amp;';
-            $buttonCode .= 'colorscheme=' . $fb_color . '&amp;';
-            $buttonCode .= 'height=65" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:' . $fb_width . 'px !important; height:65px;" allowTransparency="true"></iframe>';
+            $buttonCode = '<iframe src="//www.facebook.com/plugins/like.php?';
+            $buttonCode .= 'href=' . urlencode(get_permalink());
+            $buttonCode .= '&amp;send=' . $fb_sendbutton;
+            $buttonCode .= '&amp;layout=' . $fb_layout;
+            $buttonCode .= '&amp;width=' . $fb_width;
+            $buttonCode .= '&amp;show_faces=' . $fb_showfaces;
+            $buttonCode .= '&amp;action=' . $fb_verb;
+            $buttonCode .= '&amp;colorscheme=' . $fb_color;
+            $buttonCode .= '&amp;font=' . $fb_font;
+            $buttonCode .= '&amp;height=90';
+            if(isset($socialize_settings['socialize_fb_appid']) && $socialize_settings['socialize_fb_appid'] != "")
+                $buttonCode .= '&amp;appId=' . $socialize_settings['socialize_fb_appid'];
+            $buttonCode .= '" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:' . $fb_width . 'px; height:90px;" allowTransparency="true"></iframe>';
         } else {
             $buttonCode = '<script>
 			<!-- 
@@ -357,13 +370,13 @@ class SocializeServices {
                 break;
         }
         $buttonCode = '<su:badge layout="' . $su_type . '" location="' . get_permalink() . '"></su:badge>';
-        $buttonCode = '<script type="text/javascript">
+        self::enqueue_script('<script type="text/javascript">
           (function() {
             var li = document.createElement(\'script\'); li.type = \'text/javascript\'; li.async = true;
             li.src = \'https://platform.stumbleupon.com/1/widgets.js\';
             var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(li, s);
           })();
-        </script>';
+        </script>');
         $buttonCode = apply_filters('socialize-stumbleupon', $buttonCode);
         return $buttonCode;
     }
