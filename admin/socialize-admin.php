@@ -293,7 +293,7 @@ class SocializeAdmin {
         }
 
         $general_content .= '<p><input type="checkbox" name="socialize_display_feed" ' . checked($socialize_settings['socialize_display_feed'], 'on', false) . ' />
-					Feeds Entries</p>';
+					Feed Entries</p>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-general', 'Button Display Settings', $general_content);
 
         $alert_content .= '<p><strong>' . __("'Call To Action' Box Background Color") . '</strong><br />
