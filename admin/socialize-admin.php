@@ -517,12 +517,14 @@ class SocializeAdmin {
             $facebook_buttons_content .= '<option value="' . $fb_showfaces . '" ' . selected($socialize_settings['fb_showfaces'], $fb_showfaces, false) . '>' . $fb_showfaces . '</option>';
         }
         $facebook_buttons_content .= '</select></p>';
+        /* Does not work in iframe
         $facebook_buttons_content .= '<p>' . __("Send Button") . '<br />
 					<select name="fb_sendbutton">';
         foreach (array('true', 'false') as $fb_sendbutton) {
             $facebook_buttons_content .= '<option value="' . $fb_sendbutton . '" ' . selected($socialize_settings['fb_sendbutton'], $fb_sendbutton, false) . '>' . $fb_sendbutton . '</option>';
         }
         $facebook_buttons_content .= '</select></p>';
+         */
         $facebook_buttons_content .= '<p>' . __("Width") . '<br />
 					<input type="text" name="fb_width" value="' . $socialize_settings['fb_width'] . '" /></p>';
         $facebook_buttons_content .= '<p>' . __("Verb to Display") . '<br />
