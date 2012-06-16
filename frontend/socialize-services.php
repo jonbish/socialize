@@ -67,43 +67,13 @@ class SocializeServices {
                 $socialize_topsy_theme = $service_options['socialize_topsy_theme'];
                 $socialize_topsy_size = $service_options['socialize_topsy_size'];
                 break;
-            case "backtype":
-                $socialize_twitterWidget = $service;
-                $socialize_tweetcount_via = $service_options['socialize_tweetcount_via'];
-                $socialize_tweetcount_links = $service_options['socialize_tweetcount_links'];
-                $socialize_tweetcount_size = $service_options['socialize_tweetcount_size'];
-                $socialize_tweetcount_background = $service_options['socialize_tweetcount_background'];
-                $socialize_tweetcount_border = $service_options['socialize_tweetcount_border'];
-                break;
             case "tweetmeme":
                 $socialize_twitterWidget = $service;
                 $socialize_tweetmeme_style = $service_options['socialize_tweetmeme_style'];
                 break;
         }
 
-        if ($socialize_twitterWidget == "backtype") {
-            // Backtype button code
-            $socialize_tweetcount_bitly = "";
-            if ($socialize_settings['socialize_bitly_name'] != "" && $socialize_settings['socialize_bitly_key'] != "") {
-                $socialize_tweetcount_bitly = 'tweetcount_short_url = "' . esc_url(self::get_bitly_short_url(get_permalink(), $socialize_settings['socialize_bitly_name'], $socialize_settings['socialize_bitly_key'])) . '";';
-            }
-            $tweetcount_src = 'RT @' . $socialize_settings['socialize_twitter_source'] . ':';
-            $buttonCode =
-                    '<script type="text/javascript">
-				<!-- 
-				tweetcount_url = "' . get_permalink() . '";
-				tweetcount_title = "' . get_the_title($post->ID) . '";
-				tweetcount_src = "' . $tweetcount_src . '";
-				tweetcount_via = ' . $socialize_tweetcount_via . ';
-				tweetcount_links = ' . $socialize_tweetcount_links . ';
-				tweetcount_size = "' . $socialize_tweetcount_size . '";
-				tweetcount_background = "' . $socialize_tweetcount_background . '";
-				tweetcount_border = "' . $socialize_tweetcount_border . '";
-                                ' . $socialize_tweetcount_bitly . '
-				//-->
-			</script>
-                        <script type="text/javascript" src="http://widgets.backtype.com/tweetcount.js"></script>';
-        } else if ($socialize_twitterWidget == "tweetmeme") {
+        if ($socialize_twitterWidget == "tweetmeme") {
             // TweetMeme button code
             $tweetmeme_bitly = "";
             if ($socialize_settings['socialize_bitly_name'] != "" && $socialize_settings['socialize_bitly_key'] != "") {

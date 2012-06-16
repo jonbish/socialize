@@ -552,7 +552,6 @@ class SocializeAdmin {
         $twiter_buttons_content .= '<p>' . __("Choose which Twitter retweet button to display") . ':<br />
 					<label><input type="radio" value="official" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'official', false) . '/> <a href="http://twitter.com/goodies/tweetbutton" target="_blank">Official Tweet Button</a></label><br />
 					<label><input type="radio" value="tweetmeme" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'tweetmeme', false) . '/> <a href="http://tweetmeme.com/" target="_blank">TweetMeme</a></label><br />
-					<label><input type="radio" value="backtype" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'backtype', false) . '/> <a href="http://www.backtype.com/widgets/tweetcount" target="_blank">BackType</a></label><br />
 					<label><input type="radio" value="topsy" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'topsy', false) . '/> <a href="http://topsy.com/" target="_blank">Topsy</a></label><br /></p>';
         $twiter_buttons_content .= '<p>' . __("Twitter Source") . '<br />
 					<input type="text" name="socialize_twitter_source" value="' . $socialize_settings['socialize_twitter_source'] . '" />
@@ -595,35 +594,7 @@ class SocializeAdmin {
         $twiter_buttons_content .= '</select></p>';
 
         $twiter_buttons_content .= '</div>';
-        $twiter_buttons_content .= '<div id="socialize-twitter-backtype" class="socialize-twitter-select">';
 
-        $twiter_buttons_content .= '<p><strong>' . __("Backtype Button Settings") . '</strong></p>';
-        $twiter_buttons_content .= '<p>' . __("Backtype Size") . '<br />
-					<select name="socialize_tweetcount_size">';
-        foreach (array('large', 'small') as $backtypesize) {
-            $twiter_buttons_content .= '<option value="' . $backtypesize . '" ' . selected($socialize_settings['socialize_tweetcount_size'], $backtypesize, false) . '>' . $backtypesize . '</option>';
-        }
-        $twiter_buttons_content .= '</select></p>';
-        $twiter_buttons_content .= '<p>' . __("Backtype Via") . '<br />
-					<select name="socialize_tweetcount_via">';
-        foreach (array('true', 'false') as $backtypevia) {
-            $twiter_buttons_content .= '<option value="' . $backtypevia . '" ' . selected($socialize_settings['socialize_tweetcount_via'], $backtypevia, false) . '>' . $backtypevia . '</option>';
-        }
-        $twiter_buttons_content .= '</select></p>';
-        $twiter_buttons_content .= '<p>' . __("Backtype Links") . '<br />
-					<select name="socialize_tweetcount_links">';
-        foreach (array('true', 'false') as $backtypelinks) {
-            $twiter_buttons_content .= '<option value="' . $backtypelinks . '" ' . selected($socialize_settings['socialize_tweetcount_links'], $backtypelinks, false) . '>' . $backtypelinks . '</option>';
-        }
-        $twiter_buttons_content .= '</select></p>';
-
-        $twiter_buttons_content .= '<p>' . __("Background Color") . '<br />
-					<input type="text" name="socialize_tweetcount_background" value="' . $socialize_settings['socialize_tweetcount_background'] . '" />
-					<small>Background color Backtype Tweetcount Button</small></p>';
-        $twiter_buttons_content .= '<p>' . __("Background Border Color") . '<br />
-					<input type="text" name="socialize_tweetcount_border" value="' . $socialize_settings['socialize_tweetcount_border'] . '" />
-					<small>Background color Backtype Tweetcount Button</small></p>';
-        $twiter_buttons_content .= '</div>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-twitter', 'Twitter Button Settings', $twiter_buttons_content);
         
         // Reddit
