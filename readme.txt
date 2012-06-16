@@ -78,10 +78,9 @@ Because you can only display as many buttons that will fit within the width of t
 
 == Changelog ==
 
-This is an unstable beta version (2012.06.03)
+The current version is 2.1 (2012.06.16)
 
-
-= 2.1 (2012.06.03)=
+= 2.1 (2012.06.16)=
 * Added Pinterest
 * Removed Google Buzz
 * Changed location of settings and switched to tabbed navigation

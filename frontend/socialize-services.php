@@ -432,10 +432,11 @@ class SocializeServices {
                 if (!isset($socialize_settings)) {
                     $socialize_settings = socializeWP::get_options();
                 }
-                $socialize_tweetcount_via = $socialize_settings['socialize_tweetcount_via'];
+                $socialize_tweetcount_via = $socialize_settings['socialize_twitter_source'];
                 $buffer_counter = $socialize_settings['buffer_counter'];
                 break;
             case "official":
+                $socialize_tweetcount_via = $service_options['socialize_twitter_source'];
                 $buffer_counter = $service_options['buffer_counter'];
                 break;
         }
