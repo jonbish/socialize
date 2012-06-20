@@ -24,6 +24,7 @@ if (!defined('SOCIALIZE_ADMIN')) {
 }
 
 require_once(SOCIALIZE_PATH . "admin/socialize-admin.php");
+require_once(SOCIALIZE_PATH . "admin/social-metrics.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-services.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-frontend.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-og.php");
@@ -42,6 +43,7 @@ class socializeWP {
         self::$socializeFooterScript = array();
         if (is_admin()) {
             $socializeWPadmin = new SocializeAdmin();
+            $socializeWPmetrics = new SocializeMetrics();
         } else {
             $socializeWPfrontend = new SocializeServices();
             $socializeWPfrontend = new SocializeFrontend();
