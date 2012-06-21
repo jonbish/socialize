@@ -97,3 +97,16 @@
 	width:16px;
 	background-position:-48px -16px; /* works */
 }
+table#metrics-table {
+    border: #000 1px solid;
+}
+table#metrics-table tr:first-child { 
+    font-weight: bold;
+    border: #000 1px solid;
+}
+table#metrics-table tr td {
+    border: #ccc 1px solid;
+}
+table#metrics-table tr:nth-child(2n){
+    background-color: #eee;
+}
