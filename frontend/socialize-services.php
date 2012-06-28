@@ -408,7 +408,8 @@ class SocializeServices {
                 $pinterest_counter = $service_options['pinterest_counter'];
                 break;
         }
-        self::enqueue_js('pinterest-button', 'http://assets.pinterest.com/js/pinit.js', $socialize_settings);
+        self::enqueue_script('<script type="text/javascript" src="//assets.pinterest.com/js/pinit.js"></script>');
+        //self::enqueue_js('pinterest-button', 'http://assets.pinterest.com/js/pinit.js', $socialize_settings);
 
         $buttonCode = '<a href="http://pinterest.com/pin/create/button/?url=' . urlencode(get_permalink()) . '&';
         if (has_post_thumbnail()) {
