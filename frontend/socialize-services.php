@@ -413,7 +413,9 @@ class SocializeServices {
 
         $buttonCode = '<a href="http://pinterest.com/pin/create/button/?url=' . urlencode(get_permalink()) . '&';
         if (has_post_thumbnail()) {
-            $buttonCode .= 'media=' . urlencode(get_the_post_thumbnail($post->ID, 'thumbnail'));
+            $large_image_url = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), $size);
+            $post_thumbnail = $large_image_url[0];
+            $buttonCode .= 'media=' . urlencode($post_thumbnail);
         }
         $buttonCode .= '&description=' . urlencode(get_the_title());
         $buttonCode .= '" class="pin-it-button" count-layout="' . $pinterest_counter . '"><img border="0" src="//assets.pinterest.com/images/PinExt.png" title="Pin It" /></a>';
@@ -449,7 +451,9 @@ class SocializeServices {
         $buttonCode .= ' data-count="'.$buffer_counter.'"';
         $buttonCode .= ' data-via="' . $socialize_tweetcount_via . '"';
         if (has_post_thumbnail()) {
-            $buttonCode .= ' data-picture="' . urlencode(get_the_post_thumbnail($post->ID, 'thumbnail')) . '"';
+            $large_image_url = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), $size);
+            $post_thumbnail = $large_image_url[0];
+            $buttonCode .= ' data-picture="' . urlencode($post_thumbnail) . '"';
         }
         $buttonCode .= '>Buffer</a>';
         $buttonCode = apply_filters('socialize-buffer', $buttonCode);
