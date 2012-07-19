@@ -18,8 +18,10 @@ class SocializeMetrics {
     }
     
     function admin_scripts(){
+        wp_enqueue_script('jquery-tablesorter', SOCIALIZE_URL . 'libs/jquery.tablesorter.min.js');
         wp_enqueue_script('sharrre', SOCIALIZE_URL . 'libs/sharrre/jquery.sharrre-1.3.2.min.js');
-        wp_enqueue_script('sharrre-custom', SOCIALIZE_URL . 'libs/sharrre.js');
+        wp_enqueue_script('tablesorter-custom', SOCIALIZE_URL . 'admin/js/tablesorter.js');
+        wp_enqueue_script('sharrre-custom', SOCIALIZE_URL . 'admin/js/sharrre.js');
     }
     
     //=============================================
@@ -38,8 +40,9 @@ class SocializeMetrics {
         $the_query = new WP_Query(
                 array(
                     'post_type' => 'any',
-                    'posts_per_page' => '-1',
-                    'post_status' => 'publish'
+                    'posts_per_page' => '20',
+                    'post_status' => 'publish',
+                    'order' => ''
                     )
                 );
         while ( $the_query->have_posts() ) : $the_query->the_post();
