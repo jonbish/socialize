@@ -77,9 +77,8 @@ class SocializeFrontEnd {
         global $post;
 
         // Get out fast
-        if ((!empty($socializemeta)) && !in_array($serviceID, $socializemeta)) {
+        if ((!empty($socializemeta)) && !in_array($serviceID, $socializemeta))
             return false;
-        }
 
         // Does this post have buttons
         if (empty($socializemeta)) {

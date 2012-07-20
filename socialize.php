@@ -27,6 +27,7 @@ require_once(SOCIALIZE_PATH . "admin/socialize-admin.php");
 require_once(SOCIALIZE_PATH . "admin/social-metrics.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-services.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-frontend.php");
+require_once(SOCIALIZE_PATH . "frontend/socialize-shortcodes.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-og.php");
 
 class socializeWP {
