@@ -413,7 +413,7 @@ class SocializeServices {
 
         $buttonCode = '<a href="http://pinterest.com/pin/create/button/?url=' . urlencode(get_permalink()) . '&';
         if (has_post_thumbnail()) {
-            $large_image_url = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), $size);
+            $large_image_url = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID));
             $post_thumbnail = $large_image_url[0];
             $buttonCode .= 'media=' . urlencode($post_thumbnail);
         }
@@ -451,7 +451,7 @@ class SocializeServices {
         $buttonCode .= ' data-count="'.$buffer_counter.'"';
         $buttonCode .= ' data-via="' . $socialize_tweetcount_via . '"';
         if (has_post_thumbnail()) {
-            $large_image_url = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID), $size);
+            $large_image_url = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID));
             $post_thumbnail = $large_image_url[0];
             $buttonCode .= ' data-picture="' . urlencode($post_thumbnail) . '"';
         }
