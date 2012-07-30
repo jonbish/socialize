@@ -9,6 +9,7 @@ class SocializeServices {
             add_action('wp_footer', array(&$this, 'socialize_footer_script'));
             add_action('wp_print_scripts', array(&$this, 'socialize_head_scripts'));
         }
+        self::get_services();
     }
 
     function socialize_footer_script() {
@@ -478,20 +479,80 @@ class SocializeServices {
         $connectURL = 'http://api.bit.ly/v3/shorten?login=' . $login . '&apiKey=' . $appkey . '&uri=' . urlencode($url) . '&format=' . $format;
         return apply_filters('socialize-get_bitly_short_url', wp_remote_fopen($connectURL));
     }
-
+    
+    function get_services(){
+        $socialize_services = array(
+            'Twitter' => array(
+                'inline' => 1,
+                'action' => 11, 
+                'callback' => array(__CLASS__, 'createSocializeTwitter')
+            ),
+            'Facebook' => array(
+                'inline' => 2,
+                'action' => 12, 
+                'callback' => array(__CLASS__, 'createSocializeFacebook')
+            ),
+            'Digg' => array(
+                'inline' => 3,
+                'action' => 13, 
+                'callback' => array(__CLASS__, 'createSocializeDigg')
+            ),
+            'Sphinn' => array(
+                'inline' => 4,
+                'action' => 14, 
+                'callback' => array(__CLASS__, 'createSocializeSphinn')
+            ),
+            'Reddit' => array(
+                'inline' => 5,
+                'action' => 15, 
+                'callback' => array(__CLASS__, 'createSocializeReddit')
+            ),
+            'Dzone' => array(
+                'inline' => 6,
+                'action' => 16, 
+                'callback' => array(__CLASS__, 'createSocializeDzone')
+            ),
+            'StumbleUpon' => array(
+                'inline' => 7,
+                'action' => 17, 
+                'callback' => array(__CLASS__, 'createSocializeStumble')
+            ),
+            'Delicious' => array(
+                'inline' => 8,
+                'action' => 18, 
+                'callback' => array(__CLASS__, 'createSocializeDelicous')
+            ),
+            'LinkedIn' => array(
+                'inline' => 22,
+                'action' => 23, 
+                'callback' => array(__CLASS__, 'createSocializeLinkedIn')
+            ),
+            'Google +1' => array(
+                'inline' => 24,
+                'action' => 25, 
+                'callback' => array(__CLASS__, 'createSocializePlusOne')
+            ),
+            'Pinterest' => array(
+                'inline' => 26,
+                'action' => 27, 
+                'callback' => array(__CLASS__, 'createSocializePinterest')
+            ),
+            'Buffer' => array(
+                'inline' => 9,
+                'action' => 19, 
+                'callback' => array(__CLASS__, 'createSocializeBuffer')
+            )
+        );
+        socializeWP::$socialize_services = apply_filters('socialize-get_services', $socialize_services);
+    }
+    
     function get_button_array($location) {
-        switch ($location) {
-            case 'inline':
-                $buttons = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 22, 24, 26);
-                break;
-            case 'action':
-                $buttons = array(11, 12, 13, 14, 15, 16, 17, 18, 19, 23, 25, 27);
-                break;
+        $buttons = array();
+        foreach (socializeWP::$socialize_services as $service_name => $service_data){
+            array_push($buttons, $service_data[$location]);
         }
         $buttons = apply_filters('socialize-get_button_array', $buttons);
         return $buttons;
     }
-
 }
-
 ?>

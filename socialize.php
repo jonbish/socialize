@@ -33,6 +33,7 @@ require_once(SOCIALIZE_PATH . "frontend/socialize-og.php");
 class socializeWP {
 
     private static $socialize_settings;
+    public static $socialize_services;
     public static  $socializeFooterJS;
     public static  $socializeFooterScript;
     //=============================================
@@ -42,11 +43,11 @@ class socializeWP {
         global $socializeWPadmin, $socializeWPfrontend;
         self::$socializeFooterJS = array();
         self::$socializeFooterScript = array();
+        $socializeWPservices = new SocializeServices();
         if (is_admin()) {
             $socializeWPadmin = new SocializeAdmin();
             $socializeWPmetrics = new SocializeMetrics();
         } else {
-            $socializeWPfrontend = new SocializeServices();
             $socializeWPfrontend = new SocializeFrontend();
             $socializeWPgraph = new SocializeGraph();
         }

@@ -963,38 +963,14 @@ class SocializeAdmin {
         $socialize_buttons = array();
         $socialize_buttons[0] = $inline_buttons_array;
         $socialize_buttons[1] = $alert_buttons_array;
-
+        
         $service_names_array = array();
-        $service_names_array[0] = "";
-        $service_names_array[1] = "Twitter";
-        $service_names_array[2] = "Facebook";
-        $service_names_array[3] = "Digg";
-        $service_names_array[4] = "Sphinn";
-        $service_names_array[5] = "Reddit";
-        $service_names_array[6] = "Dzone";
-        $service_names_array[7] = "StumbleUpon";
-        $service_names_array[8] = "Delicious";
-        //$service_names_array[9] = "Google Buzz";
-        //$service_names_array[10] = "Yahoo Buzz";
-        $service_names_array[11] = "Twitter";
-        $service_names_array[12] = "Facebook";
-        $service_names_array[13] = "Digg";
-        $service_names_array[14] = "Sphinn";
-        $service_names_array[15] = "Reddit";
-        $service_names_array[16] = "Dzone";
-        $service_names_array[17] = "StumbleUpon";
-        $service_names_array[18] = "Delicious";
-        //$service_names_array[19] = "Google Buzz";
-        //$service_names_array[20] = "Yahoo Buzz";
-        $service_names_array[21] = "";
-        $service_names_array[22] = "LinkedIn";
-        $service_names_array[23] = "LinkedIn";
-        $service_names_array[24] = "Google +1";
-        $service_names_array[25] = "Google +1";
-        $service_names_array[26] = "Pinterest";
-        $service_names_array[27] = "Pinterest";
-        $service_names_array[9] = "Buffer";
-        $service_names_array[19] = "Buffer";
+        foreach (socializeWP::$socialize_services as $service_name=>$service_data){
+            if(isset($service_data['inline']))
+                $service_names_array[$service_data['inline']] = $service_name;
+            if(isset($service_data['action']))
+                $service_names_array[$service_data['action']] = $service_name;
+        }
 
         $service_names_array = apply_filters('socialize-sort_buttons_array', $service_names_array);
 

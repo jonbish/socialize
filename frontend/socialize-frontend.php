@@ -15,60 +15,14 @@ class SocializeFrontEnd {
 
     function get_button($serviceID) {
         // return button coresponding to $serviceID
-        switch ($serviceID) {
-            case 1:
-            case 11:
-                return SocializeServices::createSocializeTwitter();
+        
+        socializeWP::$socialize_services;
+        
+        foreach (socializeWP::$socialize_services as $service_name=>$service_data){
+            if($service_data['inline'] == $serviceID || $service_data['action'] == $serviceID){
+                return call_user_func($service_data['callback']);
                 break;
-            case 2:
-            case 12:
-                return SocializeServices::createSocializeFacebook();
-                break;
-            case 3:
-            case 13:
-                return SocializeServices::createSocializeDigg();
-                break;
-            case 4:
-            case 14:
-                return SocializeServices::createSocializeSphinn();
-                break;
-            case 5:
-            case 15:
-                return SocializeServices::createSocializeReddit();
-                break;
-            case 6:
-            case 16:
-                return SocializeServices::createSocializeDzone();
-                break;
-            case 7:
-            case 17:
-                return SocializeServices::createSocializeStumble();
-                break;
-            case 8:
-            case 18:
-                return SocializeServices::createSocializeDelicous();
-                break;
-            case 9:
-            case 19:
-                return SocializeServices::createSocializeBuffer();
-                // RIP Google Buzz
-                break;
-            case 10:
-            case 20:
-                // RIP Yahoo Buzz
-                break;
-            case 22:
-            case 23:
-                return SocializeServices::createSocializeLinkedIn();
-                break;
-            case 24:
-            case 25:
-                return SocializeServices::createSocializePlusOne();
-                break;
-            case 26 :
-            case 27:
-                return SocializeServices::createSocializePinterest();
-                break;
+            }
         }
     }
 
