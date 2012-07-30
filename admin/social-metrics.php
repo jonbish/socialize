@@ -1,7 +1,10 @@
 <?php
 
 class SocializeMetrics {
-
+    
+    // http://api.sharedcount.com
+    // http://www.shareaholic.com/api/data/
+    
     function SocializeMetrics() {
         if (is_admin()) {
             add_filter('socialize_settings_tabs_array', array(&$this, 'social_tab'));\
