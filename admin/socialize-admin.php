@@ -483,7 +483,8 @@ class SocializeAdmin {
             $default_content .= wp_nonce_field('socialize-update-services_options', '_wpnonce', true, false);
         }
 
-        $default_content .= '<div id="socialize-div1"><strong>InLine Social Buttons</strong><br /><ul id="inline-sortable">';
+        $default_content .= '<p>Rearrange the buttons by <em>clicking</em> and <em>dragging</em></p>';
+        $default_content .= '<div id="socialize-div1"><strong>InLine Social Buttons</strong><ul id="inline-sortable">';
         foreach ($socialize_buttons[0] as $socialize_button) {
             $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
             $checkbox_class = str_replace("+", "plus", $checkbox_class);
@@ -495,8 +496,15 @@ class SocializeAdmin {
             $checkbox_class = str_replace("+", "plus", $checkbox_class);
             $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
         }
-        $default_content .= '</ul></div><div class="clear"></div><strong>* You can rearrange the buttons by <em>clicking</em> and <em>dragging</em></strong>';
-
+        $default_content .= '</ul></div><div class="clear"></div>';
+        
+        $default_content .= '<p class="submit">
+            <input type="submit" name="socialize_option_submitted" class="button-primary" value="Save Changes" />
+        </p>';
+        
+        $default_content .= '<p>The below button will save your settings and overwrite all individual post and page button settings.
+            <br /><input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></p>';
+        
         $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Button Setup', $default_content);
         
         // Facebook
@@ -674,6 +682,41 @@ class SocializeAdmin {
     // Process contact page form data
     //=============================================
     function process_socialize_services_admin() {
+        // Update defailt buttons on all posts/pages
+        if (!empty($_POST['socialize_default_reset'])) {
+            if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-services_options')) {
+                $socialize_settings = socializeWP::get_options();
+                $socializemetaarray = array();
+                if (isset($_POST['socialize_buttons'])) {
+                    foreach ($_POST['socialize_buttons'] as $button) {
+                        if (($button > 0)) {
+                            array_push($socializemetaarray, $button);
+                        }
+                    }
+                }
+                $socializemeta = implode(',', $socializemetaarray);
+                $socialize_settings['sharemeta'] = $socializemeta;
+                
+                $mod_posts = new WP_Query(
+                        array(
+                            'meta_key' => 'socialize',
+                            'post_status' => array('publish', 'pending', 'draft', 'future', 'private'),
+                            'post_type' => 'any',
+                            'posts_per_page' => -1
+                        )
+                    );
+                while ( $mod_posts->have_posts() ) : $mod_posts->the_post();
+                    update_post_meta(get_the_ID(), 'socialize', $socializemeta);
+                endwhile;
+                wp_reset_postdata();
+                
+                echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Default Socialize settings updated.</p></div>\n";
+                echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
+
+                socializeWP::update_options($socialize_settings);
+            }
+        }
+        
         if (!empty($_POST['socialize_option_submitted'])) {
             if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-services_options')) {
                 $socialize_settings = socializeWP::get_options();
