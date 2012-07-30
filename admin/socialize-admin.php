@@ -498,12 +498,12 @@ class SocializeAdmin {
         }
         $default_content .= '</ul></div><div class="clear"></div>';
         
-        $default_content .= '<p class="submit">
+        $default_content .= '<p>
             <input type="submit" name="socialize_option_submitted" class="button-primary" value="Save Changes" />
         </p>';
         
-        $default_content .= '<p>The below button will save your settings and overwrite all individual post and page button settings.
-            <br /><input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></p>';
+        $default_content .= '<p style="color: red;">The button below will save your settings and overwrite all individual post and page button settings.</p>
+            <p><input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></p>';
         
         $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Button Setup', $default_content);
         
