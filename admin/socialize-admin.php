@@ -256,8 +256,10 @@ class SocializeAdmin {
     function socialize_display_admin() {
         $socialize_settings = self::process_socialize_display_admin();
         $socializemeta = explode(',', $socialize_settings['sharemeta']);
-
+        $socialize_buttons = self::sort_buttons_array($socializemeta);
+        
         $wrapped_content = "";
+        $default_content = "";
         $general_content = "";
         $display_content = "";
         $template_content = "";
@@ -266,6 +268,40 @@ class SocializeAdmin {
         if (function_exists('wp_nonce_field')) {
             $general_content .= wp_nonce_field('socialize-update-display_options', '_wpnonce', true, false);
         }
+        
+        $default_content .= '<p>Rearrange the buttons by <em>clicking</em> and <em>dragging</em></p>';
+        $default_content .= '<div id="socialize-div1"><strong>InLine Social Buttons</strong><ul id="inline-sortable">';
+        foreach ($socialize_buttons[0] as $socialize_button) {
+            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
+            $checkbox_class = str_replace("+", "plus", $checkbox_class);
+            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
+        }
+        $default_content .= '</ul></div><div id="socialize-div2"><strong>Alert Box Social Buttons</strong><br /><ul id="alert-sortable">';
+        foreach ($socialize_buttons[1] as $socialize_button) {
+            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
+            $checkbox_class = str_replace("+", "plus", $checkbox_class);
+            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
+        }
+        $default_content .= '</ul></div><div class="clear"></div>';
+
+        $default_content .= '<p><strong>' . __("'Call To Action' Box Text") . '</strong><br />
+                                <textarea name="socialize_text" rows="4" style="width:100%;">' . $socialize_settings['socialize_text'] . '</textarea><br />
+                                <small>Here you can change your \'Call To Action\' box text. (If you are using a 3rd party site to handle your RSS, like FeedBurner, please make sure any links to your RSS are updated.)</small></p>';
+        
+        $default_content .= '<p>
+            <input type="submit" name="socialize_option_submitted" class="button-primary" value="Save Changes" />
+        </p>';
+        $default_content .= '<p style="color: red;">The button below will save your settings and overwrite all individual post and page button settings.</p>
+            <p>';
+        $default_content .= '<p><select name="socialize_default_type">';
+        foreach (array('buttons/cta', 'buttons', 'cta') as $socialize_default_type) {
+            $default_content .= '<option value="' . $socialize_default_type . '">' . $socialize_default_type . '</option>';
+        }
+        $default_content .= '</select> ';
+        $default_content .= '<input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></p>';
+        $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Setup', $default_content);
+        
+        
         $general_content .= '<p><strong>' . __("Inline Button Alignment") . '</strong><br />
 					<label>Left<input type="radio" value="left" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'left', false) . '/></label>
 					<label>Right<input type="radio" value="right" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'right', false) . '/></label>
@@ -318,9 +354,6 @@ class SocializeAdmin {
             $alert_content .= '<option value="' . $socialize_alert_border_size . '" ' . selected($socialize_settings['socialize_alert_border_size'], $socialize_alert_border_size, false) . '>' . $socialize_alert_border_size . '</option>';
         }
         $alert_content .= '</select></p>';
-        $alert_content .= '<p><strong>' . __("'Call To Action' Box Text") . '</strong><br />
-					<textarea name="socialize_text" rows="4" style="width:100%;">' . $socialize_settings['socialize_text'] . '</textarea><br />
-					<small>Here you can change your \'Call To Action\' box text. (If you are using a 3rd party site to handle your RSS, like FeedBurner, please make sure any links to your RSS are updated.)</small></p>';
         $alert_content .= '<p><strong>' . __("Show/Hide 'Call to Action' Box") . '</strong></p>';
         $alert_content .= '<p><input type="checkbox" name="socialize_alert_box" ' . checked($socialize_settings['socialize_alert_box'], 'on', false) . ' />
 					Single Posts</p>';
@@ -366,10 +399,66 @@ class SocializeAdmin {
     // Process contact page form data
     //=============================================
     function process_socialize_display_admin() {
+        if (!empty($_POST['socialize_default_reset'])) {
+            if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-display_options')) {
+                $socialize_settings = socializeWP::get_options();
+                // If Buttons or Both
+                if($_POST['socialize_default_type'] == 'buttons/cta' || $_POST['socialize_default_type'] == 'buttons'){
+                    $socializemetaarray = array();
+                    if (isset($_POST['socialize_buttons'])) {
+                        foreach ($_POST['socialize_buttons'] as $button) {
+                            if (($button > 0)) {
+                                array_push($socializemetaarray, $button);
+                            }
+                        }
+                    }
+                    $socializemeta = implode(',', $socializemetaarray);
+                    $socialize_settings['sharemeta'] = $socializemeta;
+                }
+                // If CTA or Both
+                if($_POST['socialize_default_type'] == 'buttons/cta' || $_POST['socialize_default_type'] == 'cta'){
+                    $socialize_text = $_POST['socialize_text'];
+                    $socialize_settings['socialize_text'] = stripslashes($_POST['socialize_text']);
+                }
+                // Loop through all posts with socialize custom meta and update with new settings
+                $mod_posts = new WP_Query(
+                        array(
+                            'meta_key' => 'socialize',
+                            'post_status' => array('publish', 'pending', 'draft', 'future', 'private'),
+                            'post_type' => 'any',
+                            'posts_per_page' => -1
+                        )
+                    );
+                while ( $mod_posts->have_posts() ) : $mod_posts->the_post();
+                    if($_POST['socialize_default_type'] == 'buttons/cta' || $_POST['socialize_default_type'] == 'buttons')
+                        update_post_meta(get_the_ID(), 'socialize', $socializemeta);
+                    if($_POST['socialize_default_type'] == 'buttons/cta' || $_POST['socialize_default_type'] == 'cta')
+                        update_post_meta(get_the_ID(), 'socialize_text', $socialize_text);
+                endwhile;
+                wp_reset_postdata();
+
+                // Update settings
+                socializeWP::update_options($socialize_settings);
+
+                // Update user
+                echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Default Socialize settings updated.</p></div>\n";
+                echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
+            }
+        }
         if (!empty($_POST['socialize_option_submitted'])) {
             if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-display_options')) {
                 $socialize_settings = socializeWP::get_options();
-
+                $socializemetaarray = array();
+                if (isset($_POST['socialize_buttons'])) {
+                    foreach ($_POST['socialize_buttons'] as $button) {
+                        if (($button > 0)) {
+                            array_push($socializemetaarray, $button);
+                        }
+                    }
+                }
+                $socializemeta = implode(',', $socializemetaarray);
+                $socialize_settings['sharemeta'] = $socializemeta;
+                
                 if (isset($_POST['socialize_text'])) {
                     $socialize_settings['socialize_text'] = stripslashes($_POST['socialize_text']);
                 }
@@ -463,8 +552,7 @@ class SocializeAdmin {
     //=============================================
     function socialize_services_admin() {
         $socialize_settings = self::process_socialize_services_admin();
-        $socializemeta = explode(',', $socialize_settings['sharemeta']);
-        $socialize_buttons = self::sort_buttons_array($socializemeta);
+
 
         $wrapped_content = "";
         $digg_buttons_content = "";
@@ -482,30 +570,10 @@ class SocializeAdmin {
         if (function_exists('wp_nonce_field')) {
             $default_content .= wp_nonce_field('socialize-update-services_options', '_wpnonce', true, false);
         }
-
-        $default_content .= '<p>Rearrange the buttons by <em>clicking</em> and <em>dragging</em></p>';
-        $default_content .= '<div id="socialize-div1"><strong>InLine Social Buttons</strong><ul id="inline-sortable">';
-        foreach ($socialize_buttons[0] as $socialize_button) {
-            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
-            $checkbox_class = str_replace("+", "plus", $checkbox_class);
-            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
-        }
-        $default_content .= '</ul></div><div id="socialize-div2"><strong>Alert Box Social Buttons</strong><br /><ul id="alert-sortable">';
-        foreach ($socialize_buttons[1] as $socialize_button) {
-            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
-            $checkbox_class = str_replace("+", "plus", $checkbox_class);
-            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
-        }
-        $default_content .= '</ul></div><div class="clear"></div>';
         
-        $default_content .= '<p>
-            <input type="submit" name="socialize_option_submitted" class="button-primary" value="Save Changes" />
-        </p>';
+        $default_content .= "Add custom buttons";
         
-        $default_content .= '<p style="color: red;">The button below will save your settings and overwrite all individual post and page button settings.</p>
-            <p><input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></p>';
-        
-        $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Button Setup', $default_content);
+        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-custom', 'Custom Buttons', $default_content);
         
         // Facebook
         $facebook_buttons_content .= '<p>' . __("Choose which Facebook share button to display") . ':<br />
@@ -682,57 +750,9 @@ class SocializeAdmin {
     // Process contact page form data
     //=============================================
     function process_socialize_services_admin() {
-        // Update defailt buttons on all posts/pages
-        if (!empty($_POST['socialize_default_reset'])) {
-            if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-services_options')) {
-                $socialize_settings = socializeWP::get_options();
-                $socializemetaarray = array();
-                if (isset($_POST['socialize_buttons'])) {
-                    foreach ($_POST['socialize_buttons'] as $button) {
-                        if (($button > 0)) {
-                            array_push($socializemetaarray, $button);
-                        }
-                    }
-                }
-                $socializemeta = implode(',', $socializemetaarray);
-                $socialize_settings['sharemeta'] = $socializemeta;
-                
-                $mod_posts = new WP_Query(
-                        array(
-                            'meta_key' => 'socialize',
-                            'post_status' => array('publish', 'pending', 'draft', 'future', 'private'),
-                            'post_type' => 'any',
-                            'posts_per_page' => -1
-                        )
-                    );
-                while ( $mod_posts->have_posts() ) : $mod_posts->the_post();
-                    update_post_meta(get_the_ID(), 'socialize', $socializemeta);
-                endwhile;
-                wp_reset_postdata();
-                
-                echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Default Socialize settings updated.</p></div>\n";
-                echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
-
-                socializeWP::update_options($socialize_settings);
-            }
-        }
-        
         if (!empty($_POST['socialize_option_submitted'])) {
             if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-services_options')) {
                 $socialize_settings = socializeWP::get_options();
-                $socializemetaarray = array();
-                if (isset($_POST['socialize_buttons'])) {
-                    foreach ($_POST['socialize_buttons'] as $button) {
-                        if (($button > 0)) {
-                            array_push($socializemetaarray, $button);
-                        } else {
-                            
-                        }
-                    }
-                }
-
-                $socializemeta = implode(',', $socializemetaarray);
-                $socialize_settings['sharemeta'] = $socializemeta;
 
                 if (isset($_POST['socialize_text'])) {
                     $socialize_settings['socialize_text'] = stripslashes($_POST['socialize_text']);

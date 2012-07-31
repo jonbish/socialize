@@ -80,12 +80,12 @@ Because you can only display as many buttons that will fit within the width of t
 
 The current version is 2.2 (tbd)
 
-= 2.2 (tbd)=
-* Added metrics tab
-* Added social sharing metrics table
+= 2.2 (2012.07.30 )=
 * Added shortcode support
+* Global update old posts/pages settings share settings
+* 
 
-= 2.1 (2012.06.16)=
+= 2.1 (2012.07.30) =
 * Added Pinterest
 * Removed Google Buzz
 * Changed location of settings and switched to tabbed navigation
