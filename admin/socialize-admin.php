@@ -570,7 +570,7 @@ class SocializeAdmin {
             $default_content .= wp_nonce_field('socialize-update-services_options', '_wpnonce', true, false);
         }
         
-        $default_content .= "Add custom buttons";
+        $default_content .= "This is where you will be able to add custom buttons to Socialize. This is still in development but you can currently <a href='http://www.jonbishop.com/downloads/wordpress-plugins/socialize/socialize-api/' target='_blank'>add new buttons using the API.</a>";
         
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-custom', 'Custom Buttons', $default_content);
         
