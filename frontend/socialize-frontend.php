@@ -62,15 +62,20 @@ class SocializeFrontEnd {
         if (!isset($socialize_settings)) {
             $socialize_settings = socializeWP::get_options();
         }
-
+        
         $buttonDisplay = "";
+        $button_classes  = array();
+        $button_classes[] = 'socialize-in-button';
         if ($socialize_settings['socialize_position'] == 'vertical') {
-            $float_class = ' socialize-in-button-' . $socialize_settings['socialize_float'];
+            $button_classes[] = 'socialize-in-button-' . $socialize_settings['socialize_float'];
         } else {
-            $float_class = ' socialize-in-button-vertical';
+            $button_classes[] = 'socialize-in-button-vertical';
         }
+        
+        $button_classes = apply_filters('socialize-inline_button_class', $button_classes);
 
-        $before_button = '<div class="socialize-in-button' . $float_class . '">';
+        $button_classes = ' class="' . implode( ' ', $button_classes ) . '"';
+        $before_button = '<div' . $button_classes . '">';
         $after_button = '</div>';
 
         if (get_post_custom_keys($post->ID) && in_array('socialize', get_post_custom_keys($post->ID))) {
@@ -94,7 +99,15 @@ class SocializeFrontEnd {
         }
 
         if ($buttonDisplay != "") {
-            return '<div class="socialize-in-content" style="float:' . $socialize_settings['socialize_float'] . ';">' . $buttonDisplay . '</div>';
+            $classes = array();
+            
+            $classes[] = 'socialize-in-content';
+            $classes[] = 'socialize-in-content-' . $socialize_settings['socialize_float'];
+
+            $classes = apply_filters('socialize-inline_class', $classes);
+
+            $inline_class = ' class="' . implode( ' ', $classes ) . '"';
+            return '<div'.$inline_class.'>' . $buttonDisplay . '</div>';
         } else {
             return "";
         }

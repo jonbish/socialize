@@ -1,4 +1,4 @@
-<?php
+c<?php
 
 /*
   Plugin Name: Socialize
@@ -28,6 +28,9 @@ require_once(SOCIALIZE_PATH . "frontend/socialize-services.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-frontend.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-shortcodes.php");
 require_once(SOCIALIZE_PATH . "frontend/socialize-og.php");
+
+// Add-ins
+require_once(SOCIALIZE_PATH . "frontend/templates/templates.php");
 
 class socializeWP {
 
