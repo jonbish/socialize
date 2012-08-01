@@ -75,7 +75,7 @@ class SocializeFrontEnd {
         $button_classes = apply_filters('socialize-inline_button_class', $button_classes);
 
         $button_classes = ' class="' . implode( ' ', $button_classes ) . '"';
-        $before_button = '<div' . $button_classes . '">';
+        $before_button = '<div' . $button_classes . '>';
         $after_button = '</div>';
 
         if (get_post_custom_keys($post->ID) && in_array('socialize', get_post_custom_keys($post->ID))) {
@@ -107,7 +107,14 @@ class SocializeFrontEnd {
             $classes = apply_filters('socialize-inline_class', $classes);
 
             $inline_class = ' class="' . implode( ' ', $classes ) . '"';
-            return '<div'.$inline_class.'>' . $buttonDisplay . '</div>';
+            
+            $inline_content = '<div'.$inline_class.'>';
+            $inline_content = apply_filters('socialize-before-inline_content', $inline_content);
+            $inline_content .= $buttonDisplay;
+            $inline_content = apply_filters('socialize-after-inline_content', $inline_content);
+            $inline_content .= '</div>';
+            
+            return $inline_content;
         } else {
             return "";
         }

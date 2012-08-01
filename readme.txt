@@ -1,25 +1,25 @@
 === Socialize ===
 Contributors: JonBishop
 Donate link: http://www.jonbishop.com/donate/
-Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, bookmarks menu, social, social bookmarking, reddit, sexybookmarks, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, google plus, buddypress
+Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, sharing buttons menu, social, social bookmarking, reddit, sexysharing buttons, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, google plus, buddypress
 Requires at least: 2.7
 Tested up to: 3.4.1
 Stable tag: 2.2
 
-Provides an easy way to selectively add actionable social bookmarks to your posts content or below the post in a 'Call To Action' box.
+Provides an easy way to selectively add actionable social sharing buttons to your posts content or below the post in a 'Call To Action' box.
 
 == Description ==
 
-Socialize is an easy way to selectively add actionable social bookmarks to your posts. 
+Socialize is an easy way to selectively add actionable social sharing buttons to your posts. 
 
-You can add bookmarks in two places:
+You can add sharing buttons in two places:
 
 1. Inside the content (aligned left or right)
 1. In a box below the content
 
-The plugin was designed to make managing and adding actionable social bookmarks easier and more efficient. Instead of adding new meta keys like other plugins require, there is an additional panel in your posts admin that allows you to select which bookmarks you want to display. This is to encourage people to choose more relevant bookmarks for their posts. By only displaying the more relevant and socially successful posts, you create a form of social proof that might encourage more shares, comments and subscriptions.
+The plugin was designed to make managing and adding actionable social sharing buttons easier and more efficient. Instead of adding new meta keys like other plugins require, there is an additional panel in your posts admin that allows you to select which sharing buttons you want to display. This is to encourage people to choose more relevant sharing buttons for their posts. By only displaying the more relevant and socially successful posts, you create a form of social proof that might encourage more shares, comments and subscriptions.
 
-You are also provided with a box at the bottom of your posts that asks readers to subscribe and comment. This text can be edited in the 'Socialize Admin Page' and on individual posts/pages. You can also selectively display social bookmarks in this box the same way you go about inserting bookmarks in content. This is a great place to ask your readers to do something, like check out one of your services or to leave a comment and subscribe.
+You are also provided with a box at the bottom of your posts that asks readers to subscribe and comment. This text can be edited in the 'Socialize Admin Page' and on individual posts/pages. You can also selectively display social sharing buttons in this box the same way you go about inserting sharing buttons in content. This is a great place to ask your readers to do something, like check out one of your services or to leave a comment and subscribe.
 
 All buttons and call to action areas can be easily displayed and hidden at will. You can also change the call to action template and even overwrite the default CSS.
 
@@ -37,8 +37,8 @@ All buttons and call to action areas can be easily displayed and hidden at will.
 1. Upload the 'socialize' folder to the '/wp-content/plugins/' directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Tweak your settings under 'Socialize' in your settings panel
-1. (optional) Choose some default bookmarks to display on existing posts
-1. Selectively display bookmarks at your will
+1. (optional) Choose some default sharing buttons to display on existing posts
+1. Selectively display sharing buttons at your will
 
 
 == Frequently Asked Questions ==
@@ -47,7 +47,7 @@ All buttons and call to action areas can be easily displayed and hidden at will.
 
 Of course your can. It's one of the choice settings available to you in the settings panel.
 
-= What if I don't want bookmarks to show up? =
+= What if I don't want sharing buttons to show up? =
 
 Load the page/pages in question and make sure there are no checkboxes checked in the 'Socialize' panel of the post.
 

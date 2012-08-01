@@ -114,15 +114,31 @@
     color:#000000;
 }
 .socialize-floating{
+    border: 1px solid #CCC;
+    background: #fff;
     z-index: 9999;
     float: left;
-    width: 64px;
-    margin: 0 0 0 -115px;
+    width: 75px;
+    margin: 0 0 0 -165px;
     display: none;
     position: absolute;
 }
 .socialize-floating .socialize-in-button{
-    position: relative;
-    display: -moz-inline-block;
-    display: inline-block;
+    text-align: center;
+    display: block;
+    margin: 5px;
+    min-height: 0;
+    width: auto;
+    padding: 0;
+    float: none;
+}
+.socialize-email-button { 
+    font-size: 11px; 
+    font-family: Verdana, Arial; 
+    padding: 2px 4px; 
+    background: #f7f7f7; 
+    color: #444; 
+    border: 1px solid #ddd; 
+    display: block;
+    margin: 0 0 5px; 
 }

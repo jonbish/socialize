@@ -230,7 +230,7 @@ class SocializeServices {
             $buttonCode .= '&amp;height=65';
             if(isset($socialize_settings['socialize_fb_appid']) && $socialize_settings['socialize_fb_appid'] != "")
                 $buttonCode .= '&amp;appId=' . $socialize_settings['socialize_fb_appid'];
-            $buttonCode .= '" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:' . $fb_width . 'px; height:65px;" allowTransparency="true"></iframe>';
+            $buttonCode .= '" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:' . $fb_width . 'px; height:61px;" allowTransparency="true"></iframe>';
         } else {
             $buttonCode = '<script>
 			<!-- 
