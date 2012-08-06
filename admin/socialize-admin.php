@@ -76,6 +76,7 @@ class SocializeAdmin {
         if (isset($_GET['tab']) && $_GET['tab'] == 'display') {
             wp_enqueue_script('farbtastic');
             wp_enqueue_script('socialize-admin-color', SOCIALIZE_URL . 'admin/js/socialize-admin-color-picker.js');
+            wp_enqueue_script('socialize-admin-form', SOCIALIZE_URL . 'admin/js/socialize-admin-form.js');
         } else if (isset($_GET['tab']) && $_GET['tab'] == 'buttons') {
             wp_enqueue_script('socialize-admin-form', SOCIALIZE_URL . 'admin/js/socialize-admin-form.js');
         }
@@ -300,15 +301,23 @@ class SocializeAdmin {
         $default_content .= '<input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></p></div>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Setup', $default_content);
         
+        $general_content .= '<p><strong>' . __("Top Button Display") . '</strong><br />
+					<label>In Content<input type="radio" value="in" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'in', false) . '/></label>
+					<label>Floating Next To Content<input type="radio" value="out" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'out', false) . '/></label>
+					<small>Choose whether to display the buttons in your content or floating next to it.</small></p>';
         
-        $general_content .= '<p><strong>' . __("Inline Button Alignment") . '</strong><br />
+        $general_content .= '<div id="#socialize-display-out" class="socialize-display-select"><p><strong>' . __("Margin") . '</strong><br />
+					<input type="text" name="socialize_out_margin" value="' . $socialize_settings['socialize_out_margin'] . '" /> <small>Floating share bar margin</small></p></div>';
+        
+        $general_content .= '<div id="#socialize-display-in" class="socialize-display-select"><p><strong>' . __("Inline Button Alignment") . '</strong><br />
 					<label>Left<input type="radio" value="left" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'left', false) . '/></label>
 					<label>Right<input type="radio" value="right" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'right', false) . '/></label>
 					<small>Choose whether to display the buttons in the content on the right or left.</small></p>';
+        
         $general_content .= '<p><strong>' . __("Inline Button Position") . '</strong><br />
 					<label>Vertical<input type="radio" value="vertical" name="socialize_position" ' . checked($socialize_settings['socialize_position'], 'vertical', false) . '/></label>
 					<label>Horizontal<input type="radio" value="horizontal" name="socialize_position" ' . checked($socialize_settings['socialize_position'], 'horizontal', false) . '/></label>
-					<small>Choose whether to display the buttons in a line vertically or horizontally.</small></p>';
+					<small>Choose whether to display the buttons in a line vertically or horizontally.</small></p></div>';
 
         $general_content .= '<p><strong>' . __("Show/Hide Buttons") . '</strong><br />
             <small>This will show or hide both inline buttons and the call to action box on selected post types.</small></p>';
@@ -535,7 +544,14 @@ class SocializeAdmin {
                 } else {
                     $socialize_settings['socialize_css'] = '';
                 }
-
+                if (isset($_POST['socialize_out_margin'])) {
+                    $socialize_settings['socialize_out_margin'] = $_POST['socialize_out_margin'];
+                } else {
+                    $socialize_settings['socialize_out_margin'] = '';
+                }
+                if (isset($_POST['socialize_button_display'])) {
+                    $socialize_settings['socialize_button_display'] = $_POST['socialize_button_display'];
+                }
                 echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Socialize settings updated.</p></div>\n";
                 echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
 
@@ -953,7 +969,7 @@ class SocializeAdmin {
     //=============================================
     function socialize_postbox($id, $title, $content) {
         $postbox_wrap = "";
-        $postbox_wrap .= '<div id="' . $id . '" class="postbox">';
+        $postbox_wrap .= '<div id="' . $id . '" class="postbox socialize-admin">';
         $postbox_wrap .= '<div class="handlediv" title="Click to toggle"><br /></div>';
         $postbox_wrap .= '<h3 class="hndle"><div class="socialize-sm-icon"></div><span>' . $title . '</span></h3>';
         $postbox_wrap .= '<div class="inside">' . $content . '</div>';

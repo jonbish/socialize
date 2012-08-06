@@ -119,3 +119,9 @@ table#metrics-table tr:nth-child(2n){
     border-style: solid;
     padding: 0 .6em;
 }
+.socialize-admin p label {
+    margin: 0px 20px 0px 0px;
+}
+.socialize-admin p label input {
+    margin-left: 10px;
+}

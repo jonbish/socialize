@@ -119,7 +119,7 @@
     z-index: 9999;
     float: left;
     width: 75px;
-    margin: 0 0 0 -165px;
+    margin: 0;
     display: none;
     position: absolute;
 }

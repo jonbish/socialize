@@ -127,8 +127,16 @@ class socializeWP {
                 "socialize_fb_pageid" => "on",
                 "pinterest_counter" => "vertical",
                 "buffer_counter" => "vertical",
-                "fb_sendbutton" => "false"
+                "fb_sendbutton" => "false",
+                "socialize_button_display"  => "in",
+                "socialize_out_margin" => "-105"
             );
+            update_option('socialize_settings10', $tmp);
+        }
+        // 2.2 update
+        if (empty($tmp['socialize_button_display'])) {
+            $tmp['socialize_button_display'] = 'in';
+            $tmp['socialize_out_margin'] = '-105';
             update_option('socialize_settings10', $tmp);
         }
         // 2.1 update
