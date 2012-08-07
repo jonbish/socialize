@@ -36,14 +36,14 @@ class socialize_inline_class {
 
     function email_button($content) {
         $content .= '<div class="socialize-in-button socialize-in-button-vertical">';
-        $content .= '<a href="mailto:?subject=' . urlencode(get_the_title()) . '&subject=' . urlencode(get_permalink()) . '" class="socialize-email-button">Email</a>';
+        $content .= '<a href="mailto:?subject=' . urlencode(get_the_title()) . '&body=' . urlencode(get_permalink()) . '" class="socialize-email-button">Email</a>';
         $content .= '</div>';
         return $content;
     }
     
     function print_button($content) {
         $content .= '<div class="socialize-in-button socialize-in-button-vertical">';
-        $content .= '<a href="mailto:?subject=' . urlencode(get_the_title()) . '&subject=' . urlencode(get_permalink()) . '" class="socialize-email-button">Print</a>';
+        $content .= '<a href="javascript:window.print()" class="socialize-print-button">Print</a>';
         $content .= '</div>';
         return $content;
     }
