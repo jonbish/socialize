@@ -306,10 +306,10 @@ class SocializeAdmin {
 					<label>Floating Next To Content<input type="radio" value="out" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'out', false) . '/></label>
 					<small>Choose whether to display the buttons in your content or floating next to it.</small></p>';
         
-        $general_content .= '<div id="#socialize-display-out" class="socialize-display-select"><p><strong>' . __("Margin") . '</strong><br />
+        $general_content .= '<div id="socialize-display-out" class="socialize-display-select"><p><strong>' . __("Margin") . '</strong><br />
 					<input type="text" name="socialize_out_margin" value="' . $socialize_settings['socialize_out_margin'] . '" /> <small>Floating share bar margin</small></p></div>';
         
-        $general_content .= '<div id="#socialize-display-in" class="socialize-display-select"><p><strong>' . __("Inline Button Alignment") . '</strong><br />
+        $general_content .= '<div id="socialize-display-in" class="socialize-display-select"><p><strong>' . __("Inline Button Alignment") . '</strong><br />
 					<label>Left<input type="radio" value="left" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'left', false) . '/></label>
 					<label>Right<input type="radio" value="right" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'right', false) . '/></label>
 					<small>Choose whether to display the buttons in the content on the right or left.</small></p>';
