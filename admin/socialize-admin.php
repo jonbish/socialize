@@ -9,13 +9,13 @@ class SocializeAdmin {
             add_action('admin_print_scripts', array(&$this, 'add_socialize_admin_scripts'));
             add_action('admin_print_styles', array(&$this, 'add_socialize_admin_styles'));
             add_action('save_post', array(&$this, 'socialize_admin_process'));
-            add_filter('plugin_action_links_' . SOCIALIZE_BASENAME, array(&$this, 'hs_plugin_settings_link'));
+            add_filter('plugin_action_links_' . SOCIALIZE_BASENAME, array(&$this, 'plugin_settings_link'));
         }
     }
 
     function plugin_settings_link($links) {
         $url = admin_url('options-general.php?page=socialize');
-        $settings_link = '<a href="'.url.'">' . __('Settings') . '</a>';
+        $settings_link = '<a href="'.$url.'">' . __('Settings') . '</a>';
         array_unshift( $links, $settings_link );
         return $links;
     }
