@@ -1,45 +1,38 @@
 === Socialize ===
 Contributors: JonBishop
 Donate link: http://www.jonbishop.com/donate/
-Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, sharing buttons menu, social, social bookmarking, reddit, sexysharing buttons, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, google plus, buddypress
+Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, bookmarks menu, social, social bookmarking, reddit, sexybookmarks, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, floating, sharebar, google plus, buddypress, shortcodes
 Requires at least: 2.7
 Tested up to: 3.4.1
-Stable tag: 2.2
+Stable tag: 2.2.1
 
-Provides an easy way to selectively add actionable social sharing buttons to your posts content or below the post in a 'Call To Action' box.
+Insert popular Social bookmarking & sharing buttons like Twitter, Facebook and Pinterest. Easy set up for beginners and a flexible API for developers.
 
 == Description ==
 
-Socialize is an easy way to selectively add actionable social sharing buttons to your posts. 
+Socialize is a social sharing and bookmarking plugin built from the ground up to help increase inbound traffic to your WordPress site. Socialize was the first plugin to allow users to easily add buttons to posts through an extra settings panel on the post/page edit screen. By only displaying the more relevant and socially successful posts, you create a form of social proof that might encourage more shares, comments and subscriptions. Socialize also lets editors add a custom call to action below their posts which many popular sites use to encourage comments, ask for subscriptions and promote products.
 
-You can add sharing buttons in two places:
-
-1. Inside the content (aligned left or right)
-1. In a box below the content
-
-The plugin was designed to make managing and adding actionable social sharing buttons easier and more efficient. Instead of adding new meta keys like other plugins require, there is an additional panel in your posts admin that allows you to select which sharing buttons you want to display. This is to encourage people to choose more relevant sharing buttons for their posts. By only displaying the more relevant and socially successful posts, you create a form of social proof that might encourage more shares, comments and subscriptions.
-
-You are also provided with a box at the bottom of your posts that asks readers to subscribe and comment. This text can be edited in the 'Socialize Admin Page' and on individual posts/pages. You can also selectively display social sharing buttons in this box the same way you go about inserting sharing buttons in content. This is a great place to ask your readers to do something, like check out one of your services or to leave a comment and subscribe.
-
-All buttons and call to action areas can be easily displayed and hidden at will. You can also change the call to action template and even overwrite the default CSS.
-
-= Features =
-* 12 popular buttons including Pinterest and Buffer
-* Automatically insert Facebook and open graph data into head of site
-* Easily change button order on individual pages
-* Custom post type support
-* Lots of display and placement options
+= Other Features =
+* Open Graph enabled
 * Bitly integration
-* Actions and filter for developers
+* Developer API
+* Shortcodes
+* Support for Custom Post Types
+* Easily rearrange buttons
+* CSS Override
 
 == Installation ==
 
 1. Upload the 'socialize' folder to the '/wp-content/plugins/' directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Tweak your settings under 'Socialize' in your settings panel
-1. (optional) Choose some default sharing buttons to display on existing posts
-1. Selectively display sharing buttons at your will
+1. (optional) Choose some default bookmarks to display on existing posts
+1. Selectively display bookmarks at your will
 
+= Tips =
+* Make sure you change the referel source for Twitter in the button settings
+* Add a recommended Twitter account for
+* Fill out the open graph settings to get more out of your Facebook like button
 
 == Frequently Asked Questions ==
 
@@ -47,7 +40,7 @@ All buttons and call to action areas can be easily displayed and hidden at will.
 
 Of course your can. It's one of the choice settings available to you in the settings panel.
 
-= What if I don't want sharing buttons to show up? =
+= What if I don't want bookmarks to show up? =
 
 Load the page/pages in question and make sure there are no checkboxes checked in the 'Socialize' panel of the post.
 
@@ -55,7 +48,7 @@ Load the page/pages in question and make sure there are no checkboxes checked in
 
 Load the page/pages in question and check 'Hide Call To Action Box below this post' in the 'Socialize' panel of the post.
 
-= How do I change @socializeWP to my own Twitter username? =
+= How do I change @tweetmeme/@backtype to my own Twitter username? =
 
 Change the "Twitter Source" in the Socialize settings panel
 
@@ -67,7 +60,6 @@ One is the official Facebook button and the other is the unofficial fbShare.me b
 
 Because you can only display as many buttons that will fit within the width of the 'Call To Action' box. Besides, displaying too many buttons defeats the purpose of this plugin. Try to display less than three (3) buttons in each area. This will increase page load time and will look a lot prettier.
 
-
 == Screenshots ==
 
 1. Some buttons in the content
@@ -75,10 +67,12 @@ Because you can only display as many buttons that will fit within the width of t
 3. Default button set up, drag and drop to rearrange
 4. The settings panel
 
-
 == Changelog ==
 
-The current version is 2.2.0 (2012.08.09)
+The current version is 2.2.1 (2012.08.10)
+
+= 2.2.1 (2012.08.10) =
+* More admin cleanup
 
 = 2.2 (2012.08.09) =
 * Added shortcode support

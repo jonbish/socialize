@@ -3,7 +3,7 @@
   Plugin Name: Socialize
   Plugin URI: http://www.jonbishop.com/downloads/wordpress-plugins/socialize/
   Description: Adds actionable social sharing buttons to your site
-  Version: 2.2
+  Version: 2.2.1
   Author: Jon Bishop
   Author URI: http://www.jonbishop.com
   License: GPL2
