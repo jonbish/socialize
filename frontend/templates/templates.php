@@ -10,12 +10,14 @@ class socialize_inline_class {
         $socialize_settings = socializeWP::get_options();
         // check to see if turned on,
         // check to see if single page, post or custom post type
-        if($socialize_settings['socialize_button_display'] == 'out'){
-            add_filter('socialize-inline_class', array(__CLASS__, 'replace_class'));
-            add_filter('socialize-after-inline_content', array(__CLASS__, 'email_button'));
-            add_filter('socialize-after-inline_content', array(__CLASS__, 'print_button'));
-            add_filter('wp_enqueue_scripts', array(__CLASS__, 'scripts'));
-            add_action('wp_head', array(__CLASS__, 'style'));
+        if(is_singular() && !is_feed()){
+            if($socialize_settings['socialize_button_display'] == 'out'){
+                add_filter('socialize-inline_class', array(__CLASS__, 'replace_class'));
+                add_filter('socialize-after-inline_content', array(__CLASS__, 'email_button'));
+                add_filter('socialize-after-inline_content', array(__CLASS__, 'print_button'));
+                add_filter('wp_enqueue_scripts', array(__CLASS__, 'scripts'));
+                add_action('wp_head', array(__CLASS__, 'style'));
+            }
         }
     }
 
@@ -32,7 +34,6 @@ class socialize_inline_class {
     
     function replace_class($classes) {
         $classes = array('socialize-floating');
-
         return $classes;
     }
 

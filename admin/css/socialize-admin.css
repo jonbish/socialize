@@ -117,7 +117,8 @@ table#metrics-table tr:nth-child(2n){
     border-radius: 3px;
     border-width: 1px;
     border-style: solid;
-    padding: 0 .6em;
+    padding: 10px;
+    margin-left: 20px;
 }
 .socialize-admin p label {
     margin: 0px 20px 0px 0px;
