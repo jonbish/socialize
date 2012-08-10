@@ -33,7 +33,7 @@ class socialize_inline_class {
     }
     
     function replace_class($classes) {
-        $classes = array('socialize-floating');
+        $classes = array('socialize-floating', 'socialize-floating-bg');
         return $classes;
     }
 

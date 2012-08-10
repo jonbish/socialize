@@ -279,7 +279,7 @@ class SocializeAdmin {
         $general_content .= '<p><strong>' . __("Floating Share Bar") . '</strong><br />
 					<label>Off<input type="radio" value="in" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'in', false) . '/></label>
 					<label>On<input type="radio" value="out" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'out', false) . '/></label>
-					<small>Turn this on to display your buttons floating next to your content. The floating share bar will only be active on single pages and post types. (New feature in active development).</small></p>';
+					<small>Turn this on to display your buttons floating next to your content. The floating share bar will only be active on single <strong>pages</strong> and <strong>post types</strong> (New feature in active development).</small></p>';
         
         $general_content .= '<div id="socialize-display-out" class="socialize-display-select"><p><strong>' . __("Margin") . '</strong><br />
 					<input type="text" name="socialize_out_margin" value="' . $socialize_settings['socialize_out_margin'] . '" /> <small>Floating share bar margin in relation to the posts content.</small></p></div>';

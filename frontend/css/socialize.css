@@ -115,8 +115,8 @@
     color:#000000;
 }
 .socialize-floating{
-    border: 1px solid #CCC;
-    background: #fff;
+    border: none;
+    background: none;
     z-index: 9999;
     float: left;
     margin: 0;
@@ -125,6 +125,10 @@
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
+}
+.socialize-floating-bg{
+    border: 1px solid #CCC;
+    background: #fff;
 }
 .socialize-floating .socialize-in-button{
     text-align: center;

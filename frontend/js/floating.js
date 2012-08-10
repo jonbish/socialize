@@ -18,7 +18,20 @@ jQuery(document).ready(function () {
         socialize_floating.css('top',((p+topPadding)>s) ? topPadding+'px' : '');
     }
     function socialize_resize(){
-        var iw = jQuery('body').innerWidth();
-        if(iw<400){socialize_floating.hide();}else{socialize_floating.show();}
+        var socialize_floating = jQuery('.socialize-floating');
+
+        var off = socialize_floating.offset();
+        var l = off.left;
+        var w = socialize_floating.width();
+        var docW = jQuery(window).width();
+        var isEntirelyVisible = (l > 0 && (l+ w) < docW);
+
+        if(isEntirelyVisible){
+            socialize_floating.addClass('socialize-floating-bg');
+            socialize_floating.children().show();
+        }else{
+            socialize_floating.removeClass('socialize-floating-bg');
+            socialize_floating.children().hide();
+        }
     }
 });

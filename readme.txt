@@ -55,7 +55,7 @@ Load the page/pages in question and make sure there are no checkboxes checked in
 
 Load the page/pages in question and check 'Hide Call To Action Box below this post' in the 'Socialize' panel of the post.
 
-= How do I change @tweetmeme/@backtype to my own Twitter username? =
+= How do I change @socializeWP to my own Twitter username? =
 
 Change the "Twitter Source" in the Socialize settings panel
 
@@ -78,12 +78,15 @@ Because you can only display as many buttons that will fit within the width of t
 
 == Changelog ==
 
-The current version is 2.2 (tbd)
+The current version is 2.2.0 (2012.08.09)
 
-= 2.2 (2012.07.30 )=
+= 2.2 (2012.08.09) =
 * Added shortcode support
 * Global update old posts/pages settings share settings
-* 
+* Floating share bar
+* Cleaned up admin
+* Expanded API
+* Cleaned up button styles
 
 = 2.1 (2012.07.30) =
 * Added Pinterest
