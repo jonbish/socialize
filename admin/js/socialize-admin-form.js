@@ -9,8 +9,10 @@ jQuery(document).ready(function($) {
 	$("#socialize-facebook-"+f_test).show();
 		
 	var d_test = $("input[name=socialize_button_display]:checked").val();
-	$(".socialize-display-select").hide();
-	$("#socialize-display-"+d_test).show();
+	if(d_test == 'in')
+		$("input[name=socialize_out_margin]").attr("disabled", "disabled");
+	else
+		$("input[name=socialize_out_margin]").removeAttr("disabled");
 
 	$("input[name=socialize_twitterWidget]").change(function() {
 		var t_test = $(this).val();
@@ -24,9 +26,9 @@ jQuery(document).ready(function($) {
 	});
 	$("input[name=socialize_button_display]").change(function() {
 		var d_test = $(this).val();
-		$(".socialize-display-select").hide();
-		$("#socialize-display-"+d_test).show();
-		console.log("#socialize-display-"+d_test);
-		$(this).animate()
+		if(d_test == 'in')
+             $("input[name=socialize_out_margin]").attr("disabled", "disabled");
+          else
+             $("input[name=socialize_out_margin]").removeAttr("disabled");
 	});
 });

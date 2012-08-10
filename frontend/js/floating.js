@@ -1,10 +1,13 @@
 // floating
 jQuery(document).ready(function () {
     var socialize_floating = jQuery('.socialize-floating');
-    socialize_floating.css({
-        'position' : 'absolute'
-    }).delay(1000).fadeIn(600);
-    
+    var iw = jQuery('body').innerWidth();
+    if(iw>400){
+        socialize_floating.css({
+            'position' : 'absolute'
+        }).delay(1000).fadeIn(600);
+    }
+    jQuery.event.add(window, "resize", socialize_resize);
     jQuery.event.add(window, "scroll", socialize_scroll);
     function socialize_scroll(){
         var topPadding = 30;
@@ -14,5 +17,8 @@ jQuery(document).ready(function () {
         socialize_floating.css('position',((p+topPadding)>s) ? 'fixed' : 'absolute');
         socialize_floating.css('top',((p+topPadding)>s) ? topPadding+'px' : '');
     }
-
+    function socialize_resize(){
+        var iw = jQuery('body').innerWidth();
+        if(iw<400){socialize_floating.hide();}else{socialize_floating.show();}
+    }
 });

@@ -276,15 +276,13 @@ class SocializeAdmin {
             $general_content .= wp_nonce_field('socialize-update-display_options', '_wpnonce', true, false);
         }
         
-
-        
-        $general_content .= '<p><strong>' . __("Top Button Display") . '</strong><br />
-					<label>In Content<input type="radio" value="in" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'in', false) . '/></label>
-					<label>Floating Next To Content<input type="radio" value="out" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'out', false) . '/></label>
-					<small>Choose whether to display the buttons in your content or floating next to it.</small></p>';
+        $general_content .= '<p><strong>' . __("Floating Share Bar") . '</strong><br />
+					<label>Off<input type="radio" value="in" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'in', false) . '/></label>
+					<label>On<input type="radio" value="out" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'out', false) . '/></label>
+					<small>Turn this on to display your buttons floating next to your content. The floating share bar will only be active on single pages and post types. (New feature in active development).</small></p>';
         
         $general_content .= '<div id="socialize-display-out" class="socialize-display-select"><p><strong>' . __("Margin") . '</strong><br />
-					<input type="text" name="socialize_out_margin" value="' . $socialize_settings['socialize_out_margin'] . '" /> <small>Floating share bar margin</small></p></div>';
+					<input type="text" name="socialize_out_margin" value="' . $socialize_settings['socialize_out_margin'] . '" /> <small>Floating share bar margin in relation to the posts content.</small></p></div>';
         
         $general_content .= '<div id="socialize-display-in" class="socialize-display-select"><p><strong>' . __("Inline Button Alignment") . '</strong><br />
 					<label>Left<input type="radio" value="left" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'left', false) . '/></label>
@@ -805,7 +803,7 @@ class SocializeAdmin {
         $socialize_settings = self::process_socialize_settings_admin();
         $socializemeta = explode(',', $socialize_settings['sharemeta']);
         $socialize_buttons = self::sort_buttons_array($socializemeta);
-        
+
         $wrapped_content = "";
         $bitly_content = "";
         $facebook_content = "";
