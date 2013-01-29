@@ -97,6 +97,10 @@
 	width:16px;
 	background-position:-48px -16px; /* works */
 }
+#socialize-settings-buttons-skyrock div.socialize-sm-icon, .socialize-settings-buttons-skyrock-icon{
+	width:16px;
+	background-position:-96px -0px; /* works */
+}
 table#metrics-table {
     border: #000 1px solid;
 }

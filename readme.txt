@@ -1,7 +1,7 @@
 === Socialize ===
 Contributors: JonBishop
 Donate link: http://www.jonbishop.com/donate/
-Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, bookmarks menu, social, social bookmarking, reddit, sexybookmarks, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, google plus, buddypress
+Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, bookmarks menu, social, social bookmarking, reddit, sexybookmarks, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, google plus, buddypress, skyrock
 Requires at least: 2.7
 Tested up to: 3.4.1
 Stable tag: 2.2
@@ -24,7 +24,7 @@ You are also provided with a box at the bottom of your posts that asks readers t
 All buttons and call to action areas can be easily displayed and hidden at will. You can also change the call to action template and even overwrite the default CSS.
 
 = Features =
-* 12 popular buttons including Pinterest and Buffer
+* 13 popular buttons including Pinterest and Buffer
 * Automatically insert Facebook and open graph data into head of site
 * Easily change button order on individual pages
 * Custom post type support
