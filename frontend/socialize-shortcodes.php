@@ -41,6 +41,9 @@ function socialize_shortcode( $atts ) {
             case 'pinterest':
                 return SocializeServices::createSocializePinterest();
                 break;
+            case 'skyrock':
+                return SocializeServices::createSocializeSkyrock();
+                break;
         }
 }
 add_shortcode( 'socialize', 'socialize_shortcode' );

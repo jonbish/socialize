@@ -460,6 +460,61 @@ class SocializeServices {
         $buttonCode = apply_filters('socialize-buffer', $buttonCode);
         return $buttonCode;
     }
+
+    // Create Skyrock Button
+    function createSocializeSkyrock($service = "", $service_options = array(), $socialize_settings = null) {
+        switch ($service) {
+            case "":
+                if (!isset($socialize_settings)) {
+                    $socialize_settings = socializeWP::get_options();
+                }
+                $skyrock_size = $socialize_settings['skyrock_size'];
+                break;
+            case "official":
+                $skyrock_size = $service_options['skyrock_size'];
+                break;
+        }
+
+        switch ($skyrock_size) {
+            case 'classic20':
+                $skyrock_width = '57';
+                $skyrock_height = '20';
+                break;
+
+            case 'square16':
+                $skyrock_width = '16';
+                $skyrock_height = '16';
+                break;
+
+            case 'square24':
+                $skyrock_width = '24';
+                $skyrock_height = '24';
+                break;
+
+            case 'square38':
+                $skyrock_width = '38';
+                $skyrock_height = '38';
+                break;
+            
+            case 'classic24':
+            default:
+                $skyrock_size = 'classic24';
+                $skyrock_width = '57';
+                $skyrock_height = '24';
+                break;
+        }
+
+        $inlinescript = "<script type=\"text/javascript\"><!--
+            (function(){
+            var d=document,id='skyrock-fxlebpx'; if(d.getElementById(id)) return;
+            var e=d.createElement('script');e.id=id;e.async=true;e.src='http://share.static.skyrock.net/js/skyrock_social.min.js';
+            d.getElementsByTagName('body')[0].appendChild(e);}());
+            //--></script>";
+        self::enqueue_script($inlinescript);
+        $buttonCode = '<a href="http://www.skyrock.com/m/blog/share.php?js=0" class="skysocial-s skyrocksocialshare_' . $skyrock_size . '" title="Partager sur Skyrock" style="display:inline-block;text-indent:-999em;overflow:hidden;width:' . $skyrock_width . 'px;height:' . $skyrock_height . 'px;background:url(http://share.static.skyrock.net/img/api/skyrocksocialshare_' . $skyrock_size . '.png) no-repeat 0 0 transparent;"></a>';
+        $buttonCode = apply_filters('socialize-skyrock', $buttonCode);
+        return $buttonCode;
+    }
     
 
     function get_short_url($url, $socialize_settings = null) {
@@ -541,6 +596,10 @@ class SocializeServices {
                 'inline' => 9,
                 'action' => 19, 
                 'callback' => array(__CLASS__, 'createSocializeBuffer')
+            ),'Skyrock' => array(
+                'inline' => 28,
+                'action' => 29, 
+                'callback' => array(__CLASS__, 'createSocializeSkyrock')
             )
         );
         socializeWP::$socialize_services = apply_filters('socialize-get_services', $socialize_services);

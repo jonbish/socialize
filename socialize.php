@@ -127,8 +127,13 @@ class socializeWP {
                 "socialize_fb_pageid" => "on",
                 "pinterest_counter" => "vertical",
                 "buffer_counter" => "vertical",
-                "fb_sendbutton" => "false"
+                "fb_sendbutton" => "false",
+                "skyrock_size" => "classic24"
             );
+            update_option('socialize_settings10', $tmp);
+        }
+        if (empty($tmp['skyrock_size'])) {
+            $tmp['skyrock_size'] = 'classic24';
             update_option('socialize_settings10', $tmp);
         }
         // 2.1 update

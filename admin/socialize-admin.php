@@ -478,6 +478,7 @@ class SocializeAdmin {
         $google_plusone_buttons_content = "";
         $yahoo_buttons_content = "";
         $linkedin_buttons_content = "";
+        $skyrock_buttons_content = "";
 
         if (function_exists('wp_nonce_field')) {
             $default_content .= wp_nonce_field('socialize-update-services_options', '_wpnonce', true, false);
@@ -675,6 +676,15 @@ class SocializeAdmin {
         $digg_buttons_content .= '</select></p>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-digg', 'Digg Button Settings', $digg_buttons_content);
 
+        // Skyrock
+        $skyrock_buttons_content .= '<p>' . __("Choose which Skyrock button to display") . ':<br />
+                    <select name="skyrock_size">';
+        foreach (array('Classic (24px)' => 'classic24', 'Classic (20px)' => 'classic20', 'Square (16px)' => 'square16', 'Square (24px)' => 'square24', 'Square (38px)' => 'square38') as $skyrock_size => $skyrock_size_value) {
+            $skyrock_buttons_content .= '<option value="' . $skyrock_size_value . '" ' . selected($socialize_settings['skyrock_size'], $skyrock_size_value, false) . '>' . $skyrock_size . '</option>';
+        }
+        $skyrock_buttons_content .= '</select></p>';
+        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-skyrock', 'Skyrock Button Settings', $skyrock_buttons_content);
+
         self::socialize_admin_wrap('Socialize: Button Settings', $wrapped_content);
     }
 
@@ -829,6 +839,9 @@ class SocializeAdmin {
                 }
                 if (isset($_POST['buffer_counter'])) {
                     $socialize_settings['buffer_counter'] = $_POST['buffer_counter'];
+                }
+                if (isset($_POST['skyrock_size'])) {
+                    $socialize_settings['skyrock_size'] = $_POST['skyrock_size'];
                 }
 
                 echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Socialize settings updated.</p></div>\n";
