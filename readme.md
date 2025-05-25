@@ -32,13 +32,13 @@ Socialize is a lightweight, flexible WordPress plugin for adding customizable so
 ## 🖼️ Screenshots
 
 1. **SVG Buttons Preview**  
-   ![SVG Buttons](socialize-screenshot-1.png)
+   ![SVG Buttons](screenshot-1.png)
 2. **Official Button Integration**  
-   ![Official Buttons](socialize-screenshot-2.png)
+   ![Official Buttons](screenshot-2.png)
 3. **Drag and Drop Button Sorting**  
-   ![Drag and Drop](socialize-screenshot-3.png)
+   ![Drag and Drop](screenshot-3.png)
 4. **Post Editor Controls & CTA Box Options**  
-   ![Editor Settings](socialize-screenshot-4.png)
+   ![Editor Settings](screenshot-4.png)
 
 ---
 
