@@ -1,24 +1,36 @@
 <?PHP
 
-class SocializeAdmin {
+class SocializeAdmin
+{
 
-    function SocializeAdmin() {
-        if (is_admin()) {
-            add_action('admin_menu', array(&$this, 'settings_subpanel'));
-            add_action('admin_menu', array(&$this, 'socialize_add_meta_box'));
-            add_action('admin_print_scripts', array(&$this, 'add_socialize_admin_scripts'));
-            add_action('admin_print_styles', array(&$this, 'add_socialize_admin_styles'));
-            add_action('save_post', array(&$this, 'socialize_admin_process'));
-        }
+    public function __construct()
+    {
+        if (!is_admin()) return;
+
+        add_action('admin_menu', array(&$this, 'settings_subpanel'));
+        add_action('admin_menu', array(&$this, 'socialize_add_meta_box'));
+        add_action('admin_print_scripts', array(&$this, 'add_socialize_admin_scripts'));
+        add_action('admin_print_styles', array(&$this, 'add_socialize_admin_styles'));
+        add_action('save_post', array(&$this, 'socialize_admin_process'));
+        add_filter('plugin_action_links_' . SOCIALIZE_BASENAME, array(&$this, 'plugin_settings_link'));
     }
 
-    function settings_subpanel() {
+    public function plugin_settings_link($links)
+    {
+        $url = admin_url('options-general.php?page=socialize');
+        array_unshift($links, '<a href="' . esc_url($url) . '">' . __('Settings') . '</a>');
+        return $links;
+    }
+
+    public function settings_subpanel()
+    {
         if (function_exists('add_options_page')) {
             add_options_page('Socialize', 'Socialize', 'manage_options', 'socialize', array(&$this, 'socialize_admin'));
         }
     }
 
-    function socialize_admin() {
+    function socialize_admin()
+    {
         $tabs = self::admin_tabs();
         if (isset($_GET['tab'])) {
             $tabs[$_GET['tab']]['function'];
@@ -29,19 +41,24 @@ class SocializeAdmin {
         }
     }
 
-    function admin_tabs() {
+    function admin_tabs()
+    {
         $tabs = array(
             'general' => array(
                 'title' => __('General', 'socialize'),
                 'function' => array(&$this, 'socialize_settings_admin')
             ),
+            'buttons' => array(
+                'title' => __('Buttons', 'socialize'),
+                'function' => array(&$this, 'socialize_services_admin')
+            ),
             'display' => array(
                 'title' => __('Display', 'socialize'),
                 'function' => array(&$this, 'socialize_display_admin')
             ),
-            'buttons' => array(
-                'title' => __('Buttons', 'socialize'),
-                'function' => array(&$this, 'socialize_services_admin')
+            'tools' => array(
+                'title' => __('Tools', 'socialize'),
+                'function' => array(&$this, 'socialize_tools_admin')
             )
         );
 
@@ -52,13 +69,14 @@ class SocializeAdmin {
     //=============================================
     // Load admin styles
     //=============================================
-    function add_socialize_admin_styles() {
+    function add_socialize_admin_styles()
+    {
         global $pagenow;
         if ($pagenow == 'options-general.php' && isset($_GET['page']) && strstr($_GET['page'], "socialize")) {
             wp_enqueue_style('dashboard');
             wp_enqueue_style('global');
             wp_enqueue_style('wp-admin');
-            wp_enqueue_style('farbtastic');
+            wp_enqueue_style('wp-color-picker');
         }
         wp_enqueue_style('socialize-admin', SOCIALIZE_URL . 'admin/css/socialize-admin.css');
     }
@@ -66,21 +84,25 @@ class SocializeAdmin {
     //=============================================
     // Load admin scripts
     //=============================================
-    function add_socialize_admin_scripts() {
+    function add_socialize_admin_scripts()
+    {
         global $pagenow;
-        if ($pagenow == 'options-general.php' && isset($_GET['page']) && strstr($_GET['page'], "socialize")) {
+        $should_enqueue_color_scripts = isset($_GET['tab']) && $_GET['tab'] == 'display';
+        $should_enqueue_form_scripts = isset($_GET['tab']) && in_array($_GET['tab'], ['display', 'buttons']);
+        if ($pagenow === 'options-general.php' && isset($_GET['page']) && strpos($_GET['page'], "socialize") !== false) {
             wp_enqueue_script('postbox');
             wp_enqueue_script('dashboard');
-            //wp_enqueue_script('custom-background');
-        }
-        if (isset($_GET['tab']) && $_GET['tab'] == 'display') {
-            wp_enqueue_script('farbtastic');
-            wp_enqueue_script('socialize-admin-color', SOCIALIZE_URL . 'admin/js/socialize-admin-color-picker.js');
-        } else if (isset($_GET['tab']) && $_GET['tab'] == 'buttons') {
-            wp_enqueue_script('socialize-admin-form', SOCIALIZE_URL . 'admin/js/socialize-admin-form.js');
-        }
-        wp_enqueue_script('socialize-admin-sortable', SOCIALIZE_URL . 'admin/js/socialize-admin-sortable.js');
 
+            if ($should_enqueue_color_scripts) {
+                wp_enqueue_script('socialize-admin-color', SOCIALIZE_URL . 'admin/js/socialize-admin-color-picker.js', array('wp-color-picker'), false, true);
+            }
+
+            if ($should_enqueue_form_scripts) {
+                wp_enqueue_script('socialize-admin-form', SOCIALIZE_URL . 'admin/js/socialize-admin-form.js', array(), false, true);
+            }
+        }
+
+        wp_enqueue_script('socialize-admin-sortable', SOCIALIZE_URL . 'admin/js/socialize-admin-sortable.js', array(), false, true);
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-widget');
         wp_enqueue_script('jquery-ui-mouse');
@@ -90,7 +112,8 @@ class SocializeAdmin {
     //=============================================
     // On save post, update post meta
     //=============================================
-    function socialize_admin_process($post_ID) {
+    function socialize_admin_process($post_ID)
+    {
         if (!isset($_POST['socialize_settings_noncename']) || !wp_verify_nonce($_POST['socialize_settings_noncename'], plugin_basename(__FILE__))) {
             return $post_ID;
         }
@@ -119,7 +142,6 @@ class SocializeAdmin {
                 if (($button > 0)) {
                     array_push($socializemetaarray, $button);
                 }
-                $formid++;
             }
         }
         $socializemeta = implode(',', $socializemetaarray);
@@ -130,108 +152,113 @@ class SocializeAdmin {
         }
     }
 
-    // On post edit, load metabox
-    function socialize_metabox_admin() {
-        if (get_post_custom_keys($_GET['post']) && in_array('socialize', get_post_custom_keys($_GET['post']))) {
-            $socializemeta = explode(',', get_post_meta(intval($_GET['post']), 'socialize', true));
-        } else {
-            $socialize_settings = socializeWP::get_options();
-            $socializemeta = explode(',', $socialize_settings['sharemeta']);
-        }
-
-        $default_content = "";
-        $socialize_buttons = self::sort_buttons_array($socializemeta);
-
-        $default_content .= '<input type="hidden" name="socialize_settings_noncename" id="socialize_settings_noncename" value="' . wp_create_nonce(plugin_basename(__FILE__)) . '" />';
-        $default_content .= '<div id="socialize-div1"><strong>InLine Buttons</strong><br /><ul id="inline-sortable">';
-        foreach ($socialize_buttons[0] as $socialize_button) {
-            $default_content .= '<li class="ui-state-default"><label class="selectit"><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
-        }
-        $default_content .= '</ul></div><div id="socialize-div2"><strong>Alert Box Buttons</strong><br /><ul id="alert-sortable">';
-        foreach ($socialize_buttons[1] as $socialize_button) {
-            $default_content .= '<li class="ui-state-default"><label class="selectit"><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
-        }
-        $default_content .= '</ul></div><div class="clear"></div><strong>* You can rearrange the buttons by <em>clicking</em> and <em>dragging</em></strong>';
-        echo $default_content;
-    }
-
     // On post edit, load action +metabox
-    function socialize_metabox_action_admin() {
+    function socialize_metabox_action_admin()
+    {
         $socialize_settings = socializeWP::get_options();
         $socializemeta_text = $socialize_settings['socialize_text'];
         $socializemeta = explode(',', $socialize_settings['sharemeta']);
 
-        if (get_post_custom_keys($_GET['post'])) {
-            if (in_array('socialize', get_post_custom_keys($_GET['post']))) {
-
-                $socializemeta = explode(',', get_post_meta(intval($_GET['post']), 'socialize', true));
+        if (isset($_GET['post'])) {
+            $post_id = intval($_GET['post']);
+            if (metadata_exists('post', $post_id, 'socialize')) {
+                $socializemeta = explode(',', get_post_meta($post_id, 'socialize', true));
             }
-            if (in_array('socialize_text', get_post_custom_keys($_GET['post']))) {
-                $socializemeta_text = get_post_meta(intval($_GET['post']), 'socialize_text', true);
+            if (metadata_exists('post', $post_id, 'socialize_text')) {
+                $socializemeta_text = get_post_meta($post_id, 'socialize_text', true);
             }
         }
-        echo '<input type="hidden" name="socialize_settings_noncename" id="socialize_settings_noncename" value="' . wp_create_nonce(plugin_basename(__FILE__)) . '" />';
 
-        echo '<p><textarea name="socialize_text" rows="4" style="width:100%;">' . $socializemeta_text . '</textarea></p>';
+        $socialize_buttons = self::sort_buttons_array($socializemeta);
 
-        echo '<div class="socialize-div3" style="width:100%;">';
-        echo '	<strong>Hide Alert Box</strong><br />';
-        echo '	<label class="selectit"><input value="21" type="checkbox" name="hide_alert" id="post-share-alert"' . checked(in_array(21, $socializemeta), true) . '/> ' . __('Hide alert box below this post') . '</label>	';
-        echo '</div>';
-        echo '<div class="clear"></div>';
+        $default_content = '<input type="hidden" name="socialize_settings_noncename" value="' . esc_attr(wp_create_nonce(plugin_basename(__FILE__))) . '" />';
+
+        $default_content .= '<h3>Custom CTA Box Text</h3>';
+
+        ob_start();
+        wp_editor(
+            $socializemeta_text,
+            'socialize_text',
+            [
+                'textarea_name' => 'socialize_text',
+                'textarea_rows' => 5,
+                'media_buttons' => false,
+                'teeny' => true,
+                'quicktags' => true,
+            ]
+        );
+        $default_content .= ob_get_clean();
+
+        $default_content .= '<div id="socialize-div1"><h3>Above Content Buttons</h3><ul id="inline-sortable">';
+        foreach ($socialize_buttons[0] as $button) {
+            $default_content .= '<li class="ui-state-default"><label class="selectit"><input value="' . esc_attr($button) . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . esc_attr($button) . '"' . checked(in_array($button, $socializemeta), true, false) . '> <span>' . esc_html__($socialize_buttons[2][$button]) . '</span></label></li>';
+        }
+        $default_content .= '</ul></div>';
+
+        $default_content .= '<div id="socialize-div2"><h3>Below Content Buttons (with CTA text)</h3><ul id="alert-sortable">';
+        foreach ($socialize_buttons[1] as $button) {
+            $default_content .= '<li class="ui-state-default"><label class="selectit"><input value="' . esc_attr($button) . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . esc_attr($button) . '"' . checked(in_array($button, $socializemeta), true, false) . '> <span>' . esc_html__($socialize_buttons[2][$button]) . '</span></label></li>';
+        }
+        $default_content .= '</ul></div>';
+
+        $default_content .= '<div class="clear"></div><p>* You can rearrange the buttons by <em>clicking</em> and <em>dragging</em>. To remove buttons from posts, uncheck them. To remove CTA box content, clear the text box.</p>';
+
+        echo $default_content;
     }
 
+
     // Creates meta box
-    function socialize_add_meta_box() {
+    function socialize_add_meta_box()
+    {
         if (function_exists('get_post_types')) {
             $post_types = get_post_types(array(), 'objects');
             foreach ($post_types as $post_type) {
                 if ($post_type->show_ui) {
-                    add_meta_box('socialize-buttons-meta', __('Socialize: Buttons', 'socialize'), array(&$this, 'socialize_metabox_admin'), $post_type->name, 'side');
-                    add_meta_box('socialize-action-meta', __('Socialize: Call To Action Text', 'socialize'), array(&$this, 'socialize_metabox_action_admin'), $post_type->name, 'normal');
+                    add_meta_box('socialize-action-meta', __('Socialize', 'socialize'), array(&$this, 'socialize_metabox_action_admin'), $post_type->name, 'normal');
                 }
             }
         } else {
-            add_meta_box('socialize-buttons-meta', __('Socialize: Buttons', 'socialize'), array(&$this, 'socialize_metabox_admin'), 'post', 'side');
-            add_meta_box('socialize-action-meta', __('Socialize: Call To Action Text', 'socialize'), array(&$this, 'socialize_metabox_action_admin'), 'post', 'normal');
-
-            add_meta_box('socialize-buttons-meta', __('Socialize Settings', 'socialize'), array(&$this, 'socialize_metabox_admin'), 'page', 'side');
-            add_meta_box('socialize-action-meta', __('Socialize: Call To Action Text', 'socialize'), array(&$this, 'socialize_metabox_action_admin'), 'page', 'normal');
+            add_meta_box('socialize-action-meta', __('Socialize', 'socialize'), array(&$this, 'socialize_metabox_action_admin'), 'post', 'normal');
+            add_meta_box('socialize-action-meta', __('Socialize', 'socialize'), array(&$this, 'socialize_metabox_action_admin'), 'page', 'normal');
         }
     }
 
     //=============================================
     // Display support info
     //=============================================
-    function socialize_show_plugin_support() {
-        $content = '<p>Leave a comment on the <a target="_blank" href="http://www.jonbishop.com/downloads/wordpress-plugins/socialize/#comments">Socialize Plugin Page</a></p>
+    function socialize_show_plugin_support()
+    {
+        $content = '<p>Leave a comment on the <a target="_blank" href="https://www.jonbishop.com/downloads/wordpress-plugins/socialize/#comments">Socialize Plugin Page</a></p>
 		<p style="text-align:center;">- or -</p>
-		<p>Create a new topic on the <a target="_blank" href="http://wordpress.org/tags/socialize">WordPress Support Forum</a></p>';
+		<p>Create a new topic on the <a target="_blank" href="https://wordpress.org/tags/socialize">WordPress Support Forum</a></p>';
         return self::socialize_postbox('socialize-support', 'Support', $content);
     }
 
     //=============================================
     // Display support info
     //=============================================
-    function socialize_show_donate() {
-        $content = '<p><strong>Looking for a karmic boost?</strong><br />
-		If you like this plugin please consider donating a few bucks to support its development. If you can\'t spare any change you can also help by giving me a good rating on WordPress.org and tweeting this plugin to your followers.
-		<ul>
-			<li><a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jonbish%40gmail%2ecom&lc=US&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Donate With PayPal</a></li>
-			<li><a target="_blank" href="http://wordpress.org/extend/plugins/socialize/">Give Me A Good Rating</a></li>
-			<li><a target="_blank" href="http://twitter.com/?status=WordPress Plugin: Selectively Add Social Bookmarks to Your Posts http://bit.ly/IlCdN (via @jondbishop)">Share On Twitter</a></li>
+    function socialize_show_donate()
+    {
+        $content = '<p><strong>Enjoying this plugin?</strong><br />
+		If it’s adding value to your site, consider donating to support continued development. No pressure—if a donation’s not in the cards, a 5-star rating on WordPress.org or a quick tweet goes a long way. Thanks!<br />
+        <ul>
+			<li><a target="_blank" class="button-primary" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=jonbish%40gmail%2ecom&lc=US&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">Donate With PayPal</a></li>
+			<li><a target="_blank" class="button-primary" href="https://wordpress.org/support/view/plugin-reviews/socialize#postform">Give Me A Good Rating</a></li>
+			<li><a target="_blank" class="button-primary" href="https://twitter.com/intent/tweet?text=' . urlencode('WordPress Plugin: Selectively Add Social Bookmarks to Your Posts https://wordpress.org/plugins/socialize/') . '&url=https://wordpress.org/plugins/socialize/&hashtags=wordpress,plugin&via=jondbishop">Share On Twitter</a></li>
 		</ul></p>';
-        return self::socialize_postbox('socialize-donate', 'Donate & Share', $content);
+        return self::socialize_postbox('socialize-donate', 'Support & Share', $content);
     }
 
     //=============================================
     // Display feed
     //=============================================
-    function socialize_show_blogfeed() {
+    function socialize_show_blogfeed()
+    {
 
         include_once(ABSPATH . WPINC . '/feed.php');
         $content = "";
-        $rss = fetch_feed("http://feeds.feedburner.com/JonBishop");
+        $maxitems = 0;
+        $rss = fetch_feed("https://feeds.feedburner.com/JonBishop");
         if (!is_wp_error($rss)) {
             $maxitems = $rss->get_item_quantity(5);
             $rss_items = $rss->get_items(0, $maxitems);
@@ -250,33 +277,132 @@ class SocializeAdmin {
         return self::socialize_postbox('socialize-blog-rss', 'Tips and Tricks', $content);
     }
 
+
+    function socialize_tools_admin()
+    {
+        $socialize_settings = self::process_socialize_tools_admin();
+
+        $default_content = "";
+
+        if (function_exists('wp_nonce_field')) {
+            $default_content .= wp_nonce_field('socialize-update-tools_options', '_wpnonce', true, false);
+        }
+
+        $default_content .= '<p>
+        <span class="socialize-warning">
+            <strong>Warning!</strong> The following button will update all posts, new and old, with your new default button settings. Use the dropdown to just update buttons, call to action text or both.<br />
+            <select name="socialize_default_type">';
+        foreach (array('Buttons and Call to Action' => 'buttons/cta', 'Buttons' => 'buttons', 'Call to Action' => 'cta') as $socialize_default_name => $socialize_default_type) {
+            $default_content .= '<option value="' . $socialize_default_type . '">' . $socialize_default_name . '</option>';
+        }
+        $default_content .= '</select> ';
+        $default_content .= '<input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></span></p>';
+        //$default_content .= '<p>The button below will save your settings and overwrite all individual post and page button settings.</p>';
+        $wrapped_content = self::socialize_postbox('socialize-settings-default', 'Force Update All Posts/Pages', $default_content);
+
+        self::socialize_admin_wrap('Socialize: General Settings', $wrapped_content);
+    }
+
+    function process_socialize_tools_admin()
+    {
+        if (!empty($_POST['socialize_default_reset'])) {
+
+            if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-tools_options')) {
+                $socialize_settings = socializeWP::get_options();
+                // Loop through all posts with socialize custom meta and update with new settings
+                $mod_posts = new WP_Query(
+                    array(
+                        'meta_key' => 'socialize',
+                        'post_status' => array('publish', 'pending', 'draft', 'future', 'private'),
+                        'post_type' => 'any',
+                        'posts_per_page' => -1
+                    )
+                );
+                while ($mod_posts->have_posts()) : $mod_posts->the_post();
+                    if ($_POST['socialize_default_type'] == 'buttons/cta' || $_POST['socialize_default_type'] == 'buttons')
+                        update_post_meta(get_the_ID(), 'socialize',  $socialize_settings['sharemeta']);
+                    if ($_POST['socialize_default_type'] == 'buttons/cta' || $_POST['socialize_default_type'] == 'cta')
+                        update_post_meta(get_the_ID(), 'socialize_text', $socialize_settings['socialize_text']);
+                endwhile;
+                wp_reset_postdata();
+
+                // Update user
+                echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Default Socialize settings updated.</p></div>\n";
+                echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
+            }
+        }
+
+        $socialize_settings = socializeWP::get_options();
+        return $socialize_settings;
+    }
+
     //=============================================
     // Contact page options
     //=============================================
-    function socialize_display_admin() {
+    function socialize_display_admin()
+    {
         $socialize_settings = self::process_socialize_display_admin();
-        $socializemeta = explode(',', $socialize_settings['sharemeta']);
 
         $wrapped_content = "";
         $general_content = "";
-        $display_content = "";
         $template_content = "";
         $alert_content = "";
 
         if (function_exists('wp_nonce_field')) {
             $general_content .= wp_nonce_field('socialize-update-display_options', '_wpnonce', true, false);
         }
-        $general_content .= '<p><strong>' . __("Inline Button Alignment") . '</strong><br />
+
+        $svg_content = '';
+
+        $svg_content .= '<p>' . __("This module allows you to configure SVG settings for all SVG buttons.") . '</p>
+                        <p><strong>' . __("SVG Color") . '</strong><br />
+                        <input type="text" name="socialize_svg_color" id="svg-color-picker" value="' . $socialize_settings['socialize_svg_color'] . '" />
+                        <div id="colorPickerDiv_svg" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div></p>';
+
+        $svg_content .= '<p><strong>' . __("SVG Size") . '</strong><br />
+                         <input type="text" name="socialize_svg_size" value="' . $socialize_settings['socialize_svg_size'] . '" /></p>
+                         <p><small><small>The color and size will only apply if the buttons are set to SVG.</small></small></p>';
+
+        $wrapped_content .= self::socialize_postbox('socialize-settings-svg', 'SVG Button Settings', $svg_content);
+
+        $general_content .= '<p>' . __("This section allows you to customize the placement and display of your social share buttons, offering both top options and a floating share bar.") . '</p>';
+        $general_content .= '<p><strong>' . __("Floating Share Bar") . '</strong><br />
+					<label>Off<input type="radio" value="in" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'in', false) . '/></label>
+					<label>On<input type="radio" value="out" name="socialize_button_display" ' . checked($socialize_settings['socialize_button_display'], 'out', false) . '/></label></p>
+					<p><small>Turn this on to display your buttons floating next to your content. The floating share bar will only be active on single <strong>pages</strong> and <strong>post types</strong>.</small></p>';
+
+        $general_content .= '<div id="socialize-display-out" class="socialize-display-select"><p><strong>' . __("Margin") . '</strong><br />
+					<input type="text" name="socialize_out_margin" value="' . $socialize_settings['socialize_out_margin'] . '" /> </p>
+                    <p><small>Floating share bar margin in relation to the posts content.</small></p></div>';
+
+        $general_content .= '<div id="socialize-display-in" class="socialize-display-select"><p><strong>' . __("Button Alignment") . '</strong><br />
 					<label>Left<input type="radio" value="left" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'left', false) . '/></label>
-					<label>Right<input type="radio" value="right" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'right', false) . '/></label>
-					<small>Choose whether to display the buttons in the content on the right or left.</small></p>';
-        $general_content .= '<p><strong>' . __("Inline Button Position") . '</strong><br />
-					<label>Vertical<input type="radio" value="vertical" name="socialize_position" ' . checked($socialize_settings['socialize_position'], 'vertical', false) . '/></label>
-					<label>Horizontal<input type="radio" value="horizontal" name="socialize_position" ' . checked($socialize_settings['socialize_position'], 'horizontal', false) . '/></label>
-					<small>Choose whether to display the buttons in a line vertically or horizontally.</small></p>';
+                    <label>Center<input type="radio" value="center" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'center', false) . '/></label>
+					<label>Right<input type="radio" value="right" name="socialize_float" ' . checked($socialize_settings['socialize_float'], 'right', false) . '/></label></p>
+					<p><small>Choose whether to left align or right align the floating bar or top buttons.</small></p>';
+        $general_content .= '</div>';
+
+        $general_content .= '<p>' . __("Box Background Color") . '<br />
+                <input type="text" name="socialize_top_bg" id="top-background-color" value="' . $socialize_settings['socialize_top_bg'] . '" />
+                <div id="colorPickerDiv" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div></p>';
+        $general_content .= '<p>' . __("Box Border") . '<br />
+                <input type="text" name="socialize_top_border_color" id="top-border-color" value="' . $socialize_settings['socialize_top_border_color'] . '" />
+                <div id="colorPickerDiv_border" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div></p>';
+        $general_content .= '<p>' . __("Border Style") . '<br />
+                <select name="socialize_top_border_style">';
+        foreach (array('solid', 'dotted', 'dashed', 'double') as $socialize_top_border_style) {
+            $general_content .= '<option value="' . $socialize_top_border_style . '" ' . selected($socialize_settings['socialize_top_border_style'], $socialize_top_border_style, false) . '>' . $socialize_top_border_style . '</option>';
+        }
+        $general_content .= '</select></p>';
+        $general_content .= '<p>' . __("Border Size") . '<br />
+                <select name="socialize_top_border_size">';
+        foreach (array('0px', '1px', '2px', '3px', '4px', '5px', '6px') as $socialize_top_border_size) {
+            $general_content .= '<option value="' . $socialize_top_border_size . '" ' . selected($socialize_settings['socialize_top_border_size'], $socialize_top_border_size, false) . '>' . $socialize_top_border_size . '</option>';
+        }
+        $general_content .= '</select></p>';
 
         $general_content .= '<p><strong>' . __("Show/Hide Buttons") . '</strong><br />
-            <small>This will show or hide both inline buttons and the call to action box on selected post types.</small></p>';
+            <small>This will show or hide both top buttons and the call to action box on selected post types.</small></p>';
         $general_content .= '<p><input type="checkbox" name="socialize_display_front" ' . checked($socialize_settings['socialize_display_front'], 'on', false) . ' />
 					Front Page</p>';
         $general_content .= '<p><input type="checkbox" name="socialize_display_archives" ' . checked($socialize_settings['socialize_display_archives'], 'on', false) . ' />
@@ -288,23 +414,28 @@ class SocializeAdmin {
         $general_content .= '<p><input type="checkbox" name="socialize_display_pages" ' . checked($socialize_settings['socialize_display_pages'], 'on', false) . ' />
 					Pages</p>';
         foreach (get_post_types(array('public' => true, '_builtin' => false), 'objects') as $custom_post) {
-            $general_content .= '<p><input type="checkbox" name="socialize_display_custom_' . $custom_post->name . '" ' . checked(in_array($custom_post->name, $socialize_settings['socialize_display_custom']), true, false) . ' />
+            $general_content .= '<p><input type="checkbox" name="socialize_display_custom_' . $custom_post->name . '" ' . checked(is_array($socialize_settings['socialize_display_custom']) && in_array($custom_post->name, $socialize_settings['socialize_display_custom']), true, false) . ' />
 					' . $custom_post->label . '</p>';
         }
 
         $general_content .= '<p><input type="checkbox" name="socialize_display_feed" ' . checked($socialize_settings['socialize_display_feed'], 'on', false) . ' />
 					Feed Entries</p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-general', 'Button Display Settings', $general_content);
+        $wrapped_content .= self::socialize_postbox('socialize-settings-general', 'Top/Floating Button Settings', $general_content);
 
-        $alert_content .= '<p><strong>' . __("'Call To Action' Box Background Color") . '</strong><br />
+        $alert_content .= '<p>' . __("This module allows you to customize the appearance and behavior of the 'Call To Action' box within your posts. Settings include background color, border style, and the ability to display the box on specific post types.") . '</p>';
+
+        $alert_content .= '<div id="socialize-display-in" class="socialize-display-select"><p><strong>' . __("Button Alignment") . '</strong><br />
+        <label>Left<input type="radio" value="left" name="socialize_alert_float" ' . checked($socialize_settings['socialize_alert_float'], 'left', false) . '/></label>
+        <label>Center<input type="radio" value="center" name="socialize_alert_float" ' . checked($socialize_settings['socialize_alert_float'], 'center', false) . '/></label>
+        <label>Right<input type="radio" value="right" name="socialize_alert_float" ' . checked($socialize_settings['socialize_alert_float'], 'right', false) . '/></label></p>
+        <p><small>Choose whether to left align or right align the floating bar or top buttons.</small></p>';
+        $alert_content .= '</div>';
+
+        $alert_content .= '<p>' . __("Box Background Color") . '<br />
 					<input type="text" name="socialize_alert_bg" id="background-color" value="' . $socialize_settings['socialize_alert_bg'] . '" />
-					<a class="hide-if-no-js" href="#" id="pickcolor">' . __('Select a Color') . '</a>
-					<div id="colorPickerDiv" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div>
-					<small>By default, the background color of the \'Call To Action\' box is a yellowish tone.</small></p>';
-        $alert_content .= '<p><strong>' . __("'Call To Action' Box Border") . '</strong></p>';
-        $alert_content .= '<p>' . __("Border Color") . '<br />
+					<div id="colorPickerDiv" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div></p>';
+        $alert_content .= '<p>' . __("Box Border") . '<br />
 					<input type="text" name="socialize_alert_border_color" id="border-color" value="' . $socialize_settings['socialize_alert_border_color'] . '" />
-					<a class="hide-if-no-js" href="#" id="pickcolor_border">' . __('Select a Color') . '</a>
 					<div id="colorPickerDiv_border" style="z-index: 100; background:#eee; border:1px solid #ccc; position:absolute; display:none;"></div></p>';
         $alert_content .= '<p>' . __("Border Style") . '<br />
 					<select name="socialize_alert_border_style">';
@@ -318,41 +449,18 @@ class SocializeAdmin {
             $alert_content .= '<option value="' . $socialize_alert_border_size . '" ' . selected($socialize_settings['socialize_alert_border_size'], $socialize_alert_border_size, false) . '>' . $socialize_alert_border_size . '</option>';
         }
         $alert_content .= '</select></p>';
-        $alert_content .= '<p><strong>' . __("'Call To Action' Box Text") . '</strong><br />
-					<textarea name="socialize_text" rows="4" style="width:100%;">' . $socialize_settings['socialize_text'] . '</textarea><br />
-					<small>Here you can change your \'Call To Action\' box text. (If you are using a 3rd party site to handle your RSS, like FeedBurner, please make sure any links to your RSS are updated.)</small></p>';
         $alert_content .= '<p><strong>' . __("Show/Hide 'Call to Action' Box") . '</strong></p>';
         $alert_content .= '<p><input type="checkbox" name="socialize_alert_box" ' . checked($socialize_settings['socialize_alert_box'], 'on', false) . ' />
 					Single Posts</p>';
         $alert_content .= '<p><input type="checkbox" name="socialize_alert_box_pages" ' . checked($socialize_settings['socialize_alert_box_pages'], 'on', false) . ' />
 					Single Pages</p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-alert', '\'Call To Action\' Box Settings', $alert_content);
+        $wrapped_content .= self::socialize_postbox('socialize-settings-alert', 'Bottom CTA/Buttons Settings', $alert_content);
 
+        $template_content .= '<p>' . __("This module allows you to customize the HTML template for the Call to Action box. Adjust the settings to modify the box's appearance as per your requirement.") . '</p>';
         $template_content .= '<p><strong>' . __("Call to Action Box Template") . '</strong><br />
 					<textarea name="socialize_action_template" rows="6" style="width:100%;">' . $socialize_settings['socialize_action_template'] . '</textarea><br />
-                                            <small>This is the HTML used within the Call to Action box. You can use some of the tags below if you want to be creative. This is experimental at the moment so please use discretion.<br /><br />
-                                            <strong>Note:</strong> If this box is empty, nothing will display in the Call to Action box. To fix this, deactivate and reactivate the plugin to reset your settings. Setting swill only reset if this box is empty.</small></p>
-                                            <table class="socialize-table" cellspacing=0 callpadding=0>
-                                            <th colspan="2">Customize the Call to Action template using the provided template tags</th>
-                                            <tr>
-                                                <td>%%buttons%%</td>
-                                                <td>Display social media buttons</td>
-                                            </tr>
-                                            <tr>
-                                                <td>%%content%%</td>
-                                                <td>Display your call to action text</td>
-                                            </tr>
-                                            <tr>
-                                                <td>%%facebook_like_standard%%<br />
-                                                    %%facebook_compact%%</td>
-                                                <td>Display the standard facebook button or a compant version</td>
-                                            </tr>
-                                            <tr>
-                                                <td>%%tweetmeme_compact%%<br />
-                                                    %%twitter_compact%%</td>
-                                                <td>Display the compact Twitter or Tweetmeme buttons</td>
-                                            </tr>
-                                        </table>';
+                                            <small>This is the HTML used within the Call to Action box.<br /><br />
+                                            <strong>Note:</strong> If this box is empty, nothing will display in the Call to Action box. To fix this, deactivate and reactivate the plugin to reset your settings. Setting swill only reset if this box is empty.</small></p>';
         $template_content .= '<p><strong>' . __("Disable Socialize Stylesheet") . '</strong><br />
 					<input type="checkbox" name="socialize_css" ' . checked($socialize_settings['socialize_css'], 'on', false) . ' />
 					<small>Check this if you want to disable the stylesheet included with this plugin so you can use custom css in your own stylesheet.</small></p>';
@@ -365,7 +473,9 @@ class SocializeAdmin {
     //=============================================
     // Process contact page form data
     //=============================================
-    function process_socialize_display_admin() {
+    function process_socialize_display_admin()
+    {
+
         if (!empty($_POST['socialize_option_submitted'])) {
             if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-display_options')) {
                 $socialize_settings = socializeWP::get_options();
@@ -373,19 +483,50 @@ class SocializeAdmin {
                 if (isset($_POST['socialize_text'])) {
                     $socialize_settings['socialize_text'] = stripslashes($_POST['socialize_text']);
                 }
+                $color = preg_replace('/[^0-9a-fA-F]/', '', $_POST['socialize_svg_color']);
+                if ((strlen($color) == 6 || strlen($color) == 3) && isset($_POST['socialize_svg_color'])) {
+                    $socialize_settings['socialize_svg_color'] = $_POST['socialize_svg_color'];
+                } else {
+                    $socialize_settings['socialize_svg_color'] = '';
+                }
+                if (isset($_POST['socialize_svg_size'])) {
+                    $socialize_settings['socialize_svg_size'] = $_POST['socialize_svg_size'];
+                }
                 $color = preg_replace('/[^0-9a-fA-F]/', '', $_POST['socialize_alert_bg']);
                 if ((strlen($color) == 6 || strlen($color) == 3) && isset($_POST['socialize_alert_bg'])) {
                     $socialize_settings['socialize_alert_bg'] = $_POST['socialize_alert_bg'];
+                } else {
+                    $socialize_settings['socialize_alert_bg'] = '';
                 }
                 $border_color = preg_replace('/[^0-9a-fA-F]/', '', $_POST['socialize_alert_border_color']);
                 if ((strlen($border_color) == 6 || strlen($border_color) == 3) && isset($_POST['socialize_alert_border_color'])) {
                     $socialize_settings['socialize_alert_border_color'] = $_POST['socialize_alert_border_color'];
+                } else {
+                    $socialize_settings['socialize_alert_border_color'] = '';
                 }
                 if (isset($_POST['socialize_alert_border_style'])) {
                     $socialize_settings['socialize_alert_border_style'] = $_POST['socialize_alert_border_style'];
                 }
                 if (isset($_POST['socialize_alert_border_size'])) {
                     $socialize_settings['socialize_alert_border_size'] = $_POST['socialize_alert_border_size'];
+                }
+                $color = preg_replace('/[^0-9a-fA-F]/', '', $_POST['socialize_top_bg']);
+                if ((strlen($color) == 6 || strlen($color) == 3) && isset($_POST['socialize_top_bg'])) {
+                    $socialize_settings['socialize_top_bg'] = $_POST['socialize_top_bg'];
+                } else {
+                    $socialize_settings['socialize_top_bg'] = '';
+                }
+                $border_color = preg_replace('/[^0-9a-fA-F]/', '', $_POST['socialize_top_border_color']);
+                if ((strlen($border_color) == 6 || strlen($border_color) == 3) && isset($_POST['socialize_top_border_color'])) {
+                    $socialize_settings['socialize_top_border_color'] = $_POST['socialize_top_border_color'];
+                } else {
+                    $socialize_settings['socialize_top_border_color'] = '';
+                }
+                if (isset($_POST['socialize_top_border_style'])) {
+                    $socialize_settings['socialize_top_border_style'] = $_POST['socialize_top_border_style'];
+                }
+                if (isset($_POST['socialize_top_border_size'])) {
+                    $socialize_settings['socialize_top_border_size'] = $_POST['socialize_top_border_size'];
                 }
                 if (isset($_POST['socialize_display_front'])) {
                     $socialize_settings['socialize_display_front'] = $_POST['socialize_display_front'];
@@ -436,8 +577,8 @@ class SocializeAdmin {
                 if (isset($_POST['socialize_float'])) {
                     $socialize_settings['socialize_float'] = $_POST['socialize_float'];
                 }
-                if (isset($_POST['socialize_position'])) {
-                    $socialize_settings['socialize_position'] = $_POST['socialize_position'];
+                if (isset($_POST['socialize_alert_float'])) {
+                    $socialize_settings['socialize_alert_float'] = $_POST['socialize_alert_float'];
                 }
                 if (isset($_POST['socialize_action_template'])) {
                     $socialize_settings['socialize_action_template'] = stripslashes($_POST['socialize_action_template']);
@@ -447,13 +588,18 @@ class SocializeAdmin {
                 } else {
                     $socialize_settings['socialize_css'] = '';
                 }
-
+                if (isset($_POST['socialize_out_margin']) && $_POST['socialize_button_display'] !== 'in') {
+                    $socialize_settings['socialize_out_margin'] = $_POST['socialize_out_margin'];
+                }
+                if (isset($_POST['socialize_button_display'])) {
+                    $socialize_settings['socialize_button_display'] = $_POST['socialize_button_display'];
+                }
                 echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Socialize settings updated.</p></div>\n";
                 echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
 
                 socializeWP::update_options($socialize_settings);
             }
-        }//updated
+        } //updated
         $socialize_settings = socializeWP::get_options();
         return $socialize_settings;
     }
@@ -461,151 +607,77 @@ class SocializeAdmin {
     //=============================================
     // Contact page options
     //=============================================
-    function socialize_services_admin() {
+    function socialize_services_admin()
+    {
         $socialize_settings = self::process_socialize_services_admin();
-        $socializemeta = explode(',', $socialize_settings['sharemeta']);
-        $socialize_buttons = self::sort_buttons_array($socializemeta);
+
 
         $wrapped_content = "";
-        $digg_buttons_content = "";
         $twiter_buttons_content = "";
         $facebook_buttons_content = "";
         $default_content = "";
         $reddit_buttons_content = "";
-        $stumbleupon_buttons_content = "";
         $pinterest_buttons_content = "";
-        $buffer_buttons_content  = "";
-        $google_plusone_buttons_content = "";
-        $yahoo_buttons_content = "";
         $linkedin_buttons_content = "";
+        $pocket_buttons_content = "";
 
         if (function_exists('wp_nonce_field')) {
             $default_content .= wp_nonce_field('socialize-update-services_options', '_wpnonce', true, false);
         }
 
-        $default_content .= '<p>Rearrange the buttons by <em>clicking</em> and <em>dragging</em></p>';
-        $default_content .= '<div id="socialize-div1"><strong>InLine Social Buttons</strong><ul id="inline-sortable">';
-        foreach ($socialize_buttons[0] as $socialize_button) {
-            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
-            $checkbox_class = str_replace("+", "plus", $checkbox_class);
-            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
-        }
-        $default_content .= '</ul></div><div id="socialize-div2"><strong>Alert Box Social Buttons</strong><br /><ul id="alert-sortable">';
-        foreach ($socialize_buttons[1] as $socialize_button) {
-            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
-            $checkbox_class = str_replace("+", "plus", $checkbox_class);
-            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
-        }
-        $default_content .= '</ul></div><div class="clear"></div>';
-        
-        $default_content .= '<p>
-            <input type="submit" name="socialize_option_submitted" class="button-primary" value="Save Changes" />
-        </p>';
-        
-        $default_content .= '<p style="color: red;">The button below will save your settings and overwrite all individual post and page button settings.</p>
-            <p><input type="submit" name="socialize_default_reset" class="button-primary" value="Overwrite All Post/Page Settings" /></p>';
-        
-        $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Button Setup', $default_content);
-        
         // Facebook
         $facebook_buttons_content .= '<p>' . __("Choose which Facebook share button to display") . ':<br />
-					<label><input type="radio" value="official-like" name="socialize_fbWidget" ' . checked($socialize_settings['socialize_fbWidget'], 'official-like', false) . '/> <a href="http://developers.facebook.com/docs/reference/plugins/like" target="_blank">Official Like Button</a></label><br />
-					<label><input type="radio" value="fbshareme" name="socialize_fbWidget" ' . checked($socialize_settings['socialize_fbWidget'], 'fbshareme', false) . '/> <a href="http://www.fbshare.me/" target="_blank">fbShare.me</a></label><br /></p>';
+					<label><input type="radio" value="svg" name="socialize_fbWidget" ' . checked($socialize_settings['socialize_fbWidget'], 'svg', false) . '/> SVG</label>
+                    <label><input type="radio" value="official-like" name="socialize_fbWidget" ' . checked($socialize_settings['socialize_fbWidget'], 'official-like', false) . '/> <a href="https://developers.facebook.com/docs/reference/plugins/like" target="_blank">Official Like Button</a></label><br />
+					<br /></p>';
         $facebook_buttons_content .= '<div id="socialize-facebook-official-like" class="socialize-facebook-select">';
         $facebook_buttons_content .= '<p><strong>' . __("Facebook Button Settings") . '</strong></p>';
         $facebook_buttons_content .= '<p>' . __("Layout Style") . '<br />
 					<select name="fb_layout">';
-        foreach (array('standard', 'button_count', 'box_count') as $fb_layout) {
+        foreach (array('button_count', 'box_count') as $fb_layout) {
             $facebook_buttons_content .= '<option value="' . $fb_layout . '" ' . selected($socialize_settings['fb_layout'], $fb_layout, false) . '>' . $fb_layout . '</option>';
         }
         $facebook_buttons_content .= '</select></p>';
-        $facebook_buttons_content .= '<p>' . __("Show Faces?") . '<br />
-					<select name="fb_showfaces">';
-        foreach (array('true', 'false') as $fb_showfaces) {
-            $facebook_buttons_content .= '<option value="' . $fb_showfaces . '" ' . selected($socialize_settings['fb_showfaces'], $fb_showfaces, false) . '>' . $fb_showfaces . '</option>';
-        }
-        $facebook_buttons_content .= '</select></p>';
-        /* Does not work in iframe
-        $facebook_buttons_content .= '<p>' . __("Send Button") . '<br />
-					<select name="fb_sendbutton">';
-        foreach (array('true', 'false') as $fb_sendbutton) {
-            $facebook_buttons_content .= '<option value="' . $fb_sendbutton . '" ' . selected($socialize_settings['fb_sendbutton'], $fb_sendbutton, false) . '>' . $fb_sendbutton . '</option>';
-        }
-        $facebook_buttons_content .= '</select></p>';
-         */
-        $facebook_buttons_content .= '<p>' . __("Width") . '<br />
-					<input type="text" name="fb_width" value="' . $socialize_settings['fb_width'] . '" /></p>';
         $facebook_buttons_content .= '<p>' . __("Verb to Display") . '<br />
 					<select name="fb_verb">';
         foreach (array('like', 'recommend') as $fb_verb) {
             $facebook_buttons_content .= '<option value="' . $fb_verb . '" ' . selected($socialize_settings['fb_verb'], $fb_verb, false) . '>' . $fb_verb . '</option>';
         }
         $facebook_buttons_content .= '</select></p>';
-        $facebook_buttons_content .= '<p>' . __("Font") . '<br />
-					<select name="fb_font">';
-        foreach (array('arial', 'lucida grande', 'segoe ui', 'tahoma', 'trebuchet ms', 'verdana') as $fb_font) {
-            $facebook_buttons_content .= '<option value="' . $fb_font . '" ' . selected($socialize_settings['fb_font'], $fb_font, false) . '>' . $fb_font . '</option>';
-        }
-        $facebook_buttons_content .= '</select></p>';
-        $facebook_buttons_content .= '<p>' . __("Color") . '<br />
-					<select name="fb_color">';
-        foreach (array('light', 'dark') as $fb_color) {
-            $facebook_buttons_content .= '<option value="' . $fb_color . '" ' . selected($socialize_settings['fb_color'], $fb_color, false) . '>' . $fb_color . '</option>';
-        }
-        $facebook_buttons_content .= '</select></p>';
         $facebook_buttons_content .= '</div>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-facebook', 'Facebook Button Settings', $facebook_buttons_content);
-        
+
         // Twitter
         $twiter_buttons_content .= '<p>' . __("Choose which Twitter retweet button to display") . ':<br />
-					<label><input type="radio" value="official" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'official', false) . '/> <a href="http://twitter.com/goodies/tweetbutton" target="_blank">Official Tweet Button</a></label><br />
-					<label><input type="radio" value="tweetmeme" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'tweetmeme', false) . '/> <a href="http://tweetmeme.com/" target="_blank">TweetMeme</a></label><br />
-					<label><input type="radio" value="topsy" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'topsy', false) . '/> <a href="http://topsy.com/" target="_blank">Topsy</a></label><br /></p>';
+					<label><input type="radio" value="svg" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'svg', false) . '/> SVG</label>
+                    <label><input type="radio" value="official" name="socialize_twitterWidget" ' . checked($socialize_settings['socialize_twitterWidget'], 'official', false) . '/> <a href="https://twitter.com/goodies/tweetbutton" target="_blank">Official Tweet Button</a></label><br />
+					<br /></p>';
         $twiter_buttons_content .= '<p>' . __("Twitter Source") . '<br />
 					<input type="text" name="socialize_twitter_source" value="' . $socialize_settings['socialize_twitter_source'] . '" />
-					<small>This is your Twitter name. By default, the source is @socializeWP.</small></p>';
+					<small>This is your Twitter name.<br />By default, no source will be included in the tweet.</small></p>';
         $twiter_buttons_content .= '<div id="socialize-twitter-official" class="socialize-twitter-select">';
         $twiter_buttons_content .= '<p><strong>' . __("Official Twitter Button Settings") . '</strong></p>';
         $twiter_buttons_content .= '<p>' . __("Button Count") . '<br />
 					<select name="socialize_twitter_count">';
-        foreach (array('horizontal', 'vertical', 'none') as $twittercount) {
+        foreach (array('default', 'large') as $twittercount) {
             $twiter_buttons_content .= '<option value="' . $twittercount . '" ' . selected($socialize_settings['socialize_twitter_count'], $twittercount, false) . '>' . $twittercount . '</option>';
         }
         $twiter_buttons_content .= '</select></p>';
         $twiter_buttons_content .= '<p>' . __("Twitter Refer") . '<br />
-					<input type="text" name="socialize_twitter_related" value="' . $socialize_settings['socialize_twitter_related'] . '" />
-					<small>Recommend a Twitter account for users to follow after they share content from your website.</small></p>';
-        $twiter_buttons_content .= '</div>';
-        $twiter_buttons_content .= '<div id="socialize-twitter-topsy" class="socialize-twitter-select">';
-        $twiter_buttons_content .= '<p><strong>' . __("Topsy Button Settings") . '</strong></p>';
-        $twiter_buttons_content .= '<p>' . __("Topsy Theme") . '<br />
-					<select name="socialize_topsy_theme">';
-        foreach (array('wisteria', 'brown', 'monochrome', 'jade', 'brick-red', 'sea-foam', 'mustard', 'light-blue', 'hot-pink', 'silver', 'sand', 'red', 'blue') as $topsytheme) {
-            $twiter_buttons_content .= '<option value="' . $topsytheme . '" ' . selected($socialize_settings['socialize_topsy_theme'], $topsytheme, false) . '>' . $topsytheme . '</option>';
-        }
-        $twiter_buttons_content .= '</select></p>';
-        $twiter_buttons_content .= '<p>' . __("Topsy Size") . '<br />
-					<select name="socialize_topsy_size">';
-        foreach (array('big', 'small') as $topsysize) {
-            $twiter_buttons_content .= '<option value="' . $topsysize . '" ' . selected($socialize_settings['socialize_topsy_size'], $topsysize, false) . '>' . $topsysize . '</option>';
-        }
-        $twiter_buttons_content .= '</select></p>';
-        $twiter_buttons_content .= '</div>';
-        $twiter_buttons_content .= '<div id="socialize-twitter-tweetmeme" class="socialize-twitter-select">';
-        $twiter_buttons_content .= '<p><strong>' . __("Tweetmeme Button Settings") . '</strong></p>';
-
-        $twiter_buttons_content .= '<p>' . __("Tweetmeme Style") . '<br />
-					<select name="socialize_tweetmeme_style">';
-        foreach (array('normal', 'compact') as $tweetmemestyle) {
-            $twiter_buttons_content .= '<option value="' . $tweetmemestyle . '" ' . selected($socialize_settings['socialize_tweetmeme_style'], $tweetmemestyle, false) . '>' . $tweetmemestyle . '</option>';
-        }
-        $twiter_buttons_content .= '</select></p>';
-
+					<input type="text" name="socialize_twitter_related" value="' . $socialize_settings['socialize_twitter_related'] . '" /></p>
+					<p><small>Recommend a Twitter account for users to follow after they share content from your website.</small></p>';
         $twiter_buttons_content .= '</div>';
 
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-twitter', 'Twitter Button Settings', $twiter_buttons_content);
-        
+
         // Reddit
+        $reddit_buttons_content .= '<p>' . __("Choose which Reddit share button to display") . ':<br />
+					<label><input type="radio" value="svg" name="socialize_RedditWidget" ' . checked($socialize_settings['socialize_RedditWidget'], 'svg', false) . '/> SVG</label>
+                    <label><input type="radio" value="official" name="socialize_RedditWidget" ' . checked($socialize_settings['socialize_RedditWidget'], 'official', false) . '/> Official Reddit Button</label><br />
+					<br /></p>';
+
+        $reddit_buttons_content .= '<div id="socialize-reddit-official" class="socialize-reddit-select">';
+        $reddit_buttons_content .= '<p><strong>' . __("Official Reddit Button Settings") . '</strong></p>';
         $reddit_buttons_content .= '<p>' . __("Choose which Reddit share button to display") . ':<br />
 					<select name="reddit_type">';
         foreach (array('compact' => '1', 'normal' => '2', 'big' => '3') as $reddit_type => $reddit_type_value) {
@@ -618,62 +690,64 @@ class SocializeAdmin {
         $reddit_buttons_content .= '<p>' . __("Background Border Color") . '<br />
 					<input type="text" name="reddit_bordercolor" value="' . $socialize_settings['reddit_bordercolor'] . '" />
 					<small>Background border color of Reddit Button</small></p>';
+        $reddit_buttons_content .= '</div>';
 
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-reddit', 'Reddit Button Settings', $reddit_buttons_content);
-        
-        // Stumbleupon
-        $stumbleupon_buttons_content .= '<p>' . __("Choose which StumbleUpon button to display") . ':<br />
-					<select name="su_type">';
-        foreach (array('horizontal square' => '1', 'horizontal rounded' => '2', 'horizontal simple' => '3', 'vertical' => '5', 'round large' => '6', 'round small' => '4') as $su_type => $su_type_value) {
-            $stumbleupon_buttons_content .= '<option value="' . $su_type_value . '" ' . selected($socialize_settings['su_type'], $su_type_value, false) . '>' . $su_type . '</option>';
-        }
-        $stumbleupon_buttons_content .= '</select></p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-stumbleupon', 'Stumbleupon Button Settings', $stumbleupon_buttons_content);
 
         // Pinterest
-        $pinterest_buttons_content .= '<p>' . __("Choose which Pinterest button to display") . ':<br />
+        $pinterest_buttons_content .= '<p>' . __("Choose which Pinterest share button to display") . ':<br />
+                    <label><input type="radio" value="svg" name="socialize_PinterestWidget" ' . checked($socialize_settings['socialize_PinterestWidget'], 'svg', false) . '/> SVG</label>
+                    <label><input type="radio" value="official" name="socialize_PinterestWidget" ' . checked($socialize_settings['socialize_PinterestWidget'], 'official', false) . '/> Official Pinterest Button</label><br />
+                    <br /></p>';
+
+        $pinterest_buttons_content .= '<div id="socialize-pinterest-official" class="socialize-pinterest-select">';
+        $pinterest_buttons_content .= '<p><strong>' . __("Official Pinterest Button Settings") . '</strong></p>';
+        $pinterest_buttons_content .= '<p>' . __("Choose where to show the Pin count") . ':<br />
 					<select name="pinterest_counter">';
-        foreach (array('vertical', 'horizontal', 'none') as $pinterest_counter) {
-            $pinterest_buttons_content .= '<option value="' . $pinterest_counter . '" ' . selected($socialize_settings['pinterest_counter'], $pinterest_counter, false) . '>' . $pinterest_counter . '</option>';
+        foreach (array('Above the button' => 'above', 'Beside the button' => 'beside', 'Not shown' => 'none') as $pinterest_counter_key => $pinterest_counter) {
+            $pinterest_buttons_content .= '<option value="' . $pinterest_counter . '" ' . selected($socialize_settings['pinterest_counter'], $pinterest_counter, false) . '>' . $pinterest_counter_key . '</option>';
         }
         $pinterest_buttons_content .= '</select></p>';
+        $pinterest_buttons_content .= '</div>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-pinterest', 'Pinterest Button Settings', $pinterest_buttons_content);
-        
-        // Buffer
-        $buffer_buttons_content .= '<p>' . __("Choose which Buffer button to display") . ':<br />
-					<select name="buffer_counter">';
-        foreach (array('vertical', 'horizontal', 'none') as $buffer_counter) {
-            $buffer_buttons_content .= '<option value="' . $buffer_counter . '" ' . selected($socialize_settings['buffer_counter'], $buffer_counter, false) . '>' . $buffer_counter . '</option>';
+
+        // Pocket
+        $pocket_buttons_content .= '<p>' . __("Choose which Pocket share button to display") . ':<br />
+            <label><input type="radio" value="svg" name="socialize_PocketWidget" ' . checked($socialize_settings['socialize_PocketWidget'], 'svg', false) . '/> SVG</label>
+            <label><input type="radio" value="official" name="socialize_PocketWidget" ' . checked($socialize_settings['socialize_PocketWidget'], 'official', false) . '/> Official Pocket Button</label><br />
+            <br /></p>';
+
+        $pocket_buttons_content .= '<div id="socialize-pocket-official" class="socialize-pocket-select">';
+        $pocket_buttons_content .= '<p><strong>' . __("Official Pocket Button Settings") . '</strong></p>';
+        $pocket_buttons_content .= '<p>' . __("Choose where to show the Pocket count") . ':<br />
+                    <select name="pocket_counter">';
+        foreach (array('Above the button' => 'vertical"', 'Beside the button' => 'horizontal', 'Not shown' => 'none') as $pocket_counter_key => $pocket_counter) {
+            $pocket_buttons_content .= '<option value="' . $pocket_counter . '" ' . selected($socialize_settings['pocket_counter'], $pocket_counter, false) . '>' . $pocket_counter_key . '</option>';
         }
-        $buffer_buttons_content .= '</select></p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-buffer', 'Buffer Button Settings', $buffer_buttons_content);
-        
-        // Google Plus
-        $google_plusone_buttons_content .= '<p>' . __("Choose which Google +1 button to display") . ':<br />
-					<select name="plusone_style">';
-        foreach (array('small', 'medium', 'standard', 'tall') as $plusone_style) {
-            $google_plusone_buttons_content .= '<option value="' . $plusone_style . '" ' . selected($socialize_settings['plusone_style'], $plusone_style, false) . '>' . $plusone_style . '</option>';
-        }
-        $google_plusone_buttons_content .= '</select></p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-google-plusone', 'Google +1 Button Settings', $google_plusone_buttons_content);
+        $pocket_buttons_content .= '</select></p>';
+        $pocket_buttons_content .= '</div>';
+        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-pocket', 'Pocket Button Settings', $pocket_buttons_content);
 
         // LinkedIn
+        $linkedin_buttons_content .= '<p>' . __("Choose which LinkedIn share button to display") . ':<br />
+            <label><input type="radio" value="svg" name="socialize_LinkedInWidget" ' . checked($socialize_settings['socialize_LinkedInWidget'], 'svg', false) . '/> SVG</label>
+            <label><input type="radio" value="official" name="socialize_LinkedInWidget" ' . checked($socialize_settings['socialize_LinkedInWidget'], 'official', false) . '/> Official LinkedIn Button</label><br />
+            <br /></p>';
+
+        $linkedin_buttons_content .= '<div id="socialize-linkedin-official" class="socialize-linkedin-select">';
+        $linkedin_buttons_content .= '<p><strong>' . __("Official LinkedIn Button Settings") . '</strong></p>';
         $linkedin_buttons_content .= '<p>' . __("Choose which LinkedIn button to display") . ':<br />
 					<select name="linkedin_counter">';
         foreach (array('top', 'right', 'none') as $linkedin_counter) {
             $linkedin_buttons_content .= '<option value="' . $linkedin_counter . '" ' . selected($socialize_settings['linkedin_counter'], $linkedin_counter, false) . '>' . $linkedin_counter . '</option>';
         }
         $linkedin_buttons_content .= '</select></p>';
+        $linkedin_buttons_content .= '</div>';
         $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-linkedin', 'LinkedIn Button Settings', $linkedin_buttons_content);
-        
-        // Digg
-        $digg_buttons_content .= '<p>' . __("Choose which Digg button to display") . ':<br />
-					<select name="digg_size">';
-        foreach (array('Wide' => 'DiggWide', 'Medium' => 'DiggMedium', 'Compact' => 'DiggCompact', 'Icon' => 'DiggIcon') as $digg_size => $digg_size_value) {
-            $digg_buttons_content .= '<option value="' . $digg_size_value . '" ' . selected($socialize_settings['digg_size'], $digg_size_value, false) . '>' . $digg_size . '</option>';
-        }
-        $digg_buttons_content .= '</select></p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-digg', 'Digg Button Settings', $digg_buttons_content);
+
+        $default_content .= "You can add custom buttons <a href='https://www.jonbishop.com/downloads/wordpress-plugins/socialize/socialize-api/' target='_blank'>using the API.</a>";
+
+        $wrapped_content .= self::socialize_postbox('socialize-settings-buttons-custom', 'Custom Buttons', $default_content);
 
         self::socialize_admin_wrap('Socialize: Button Settings', $wrapped_content);
     }
@@ -681,58 +755,11 @@ class SocializeAdmin {
     //=============================================
     // Process contact page form data
     //=============================================
-    function process_socialize_services_admin() {
-        // Update defailt buttons on all posts/pages
-        if (!empty($_POST['socialize_default_reset'])) {
-            if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-services_options')) {
-                $socialize_settings = socializeWP::get_options();
-                $socializemetaarray = array();
-                if (isset($_POST['socialize_buttons'])) {
-                    foreach ($_POST['socialize_buttons'] as $button) {
-                        if (($button > 0)) {
-                            array_push($socializemetaarray, $button);
-                        }
-                    }
-                }
-                $socializemeta = implode(',', $socializemetaarray);
-                $socialize_settings['sharemeta'] = $socializemeta;
-                
-                $mod_posts = new WP_Query(
-                        array(
-                            'meta_key' => 'socialize',
-                            'post_status' => array('publish', 'pending', 'draft', 'future', 'private'),
-                            'post_type' => 'any',
-                            'posts_per_page' => -1
-                        )
-                    );
-                while ( $mod_posts->have_posts() ) : $mod_posts->the_post();
-                    update_post_meta(get_the_ID(), 'socialize', $socializemeta);
-                endwhile;
-                wp_reset_postdata();
-                
-                echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Default Socialize settings updated.</p></div>\n";
-                echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
-
-                socializeWP::update_options($socialize_settings);
-            }
-        }
-        
+    function process_socialize_services_admin()
+    {
         if (!empty($_POST['socialize_option_submitted'])) {
             if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-services_options')) {
                 $socialize_settings = socializeWP::get_options();
-                $socializemetaarray = array();
-                if (isset($_POST['socialize_buttons'])) {
-                    foreach ($_POST['socialize_buttons'] as $button) {
-                        if (($button > 0)) {
-                            array_push($socializemetaarray, $button);
-                        } else {
-                            
-                        }
-                    }
-                }
-
-                $socializemeta = implode(',', $socializemetaarray);
-                $socialize_settings['sharemeta'] = $socializemeta;
 
                 if (isset($_POST['socialize_text'])) {
                     $socialize_settings['socialize_text'] = stripslashes($_POST['socialize_text']);
@@ -743,23 +770,24 @@ class SocializeAdmin {
                 if (isset($_POST['socialize_fbWidget'])) {
                     $socialize_settings['socialize_fbWidget'] = $_POST['socialize_fbWidget'];
                 }
+                if (isset($_POST['socialize_RedditWidget'])) {
+                    $socialize_settings['socialize_RedditWidget'] = $_POST['socialize_RedditWidget'];
+                }
+                if (isset($_POST['socialize_PinterestWidget'])) {
+                    $socialize_settings['socialize_PinterestWidget'] = $_POST['socialize_PinterestWidget'];
+                }
+                if (isset($_POST['socialize_PocketWidget'])) {
+                    $socialize_settings['socialize_PocketWidget'] = $_POST['socialize_PocketWidget'];
+                }
+                if (isset($_POST['socialize_LinkedInWidget'])) {
+                    $socialize_settings['socialize_LinkedInWidget'] = $_POST['socialize_LinkedInWidget'];
+                }
                 if (isset($_POST['fb_layout'])) {
                     $socialize_settings['fb_layout'] = $_POST['fb_layout'];
                 }
-                if (isset($_POST['fb_showfaces'])) {
-                    $socialize_settings['fb_showfaces'] = $_POST['fb_showfaces'];
-                }
+
                 if (isset($_POST['fb_verb'])) {
                     $socialize_settings['fb_verb'] = $_POST['fb_verb'];
-                }
-                if (isset($_POST['fb_font'])) {
-                    $socialize_settings['fb_font'] = $_POST['fb_font'];
-                }
-                if (isset($_POST['fb_color'])) {
-                    $socialize_settings['fb_color'] = $_POST['fb_color'];
-                }
-                if (isset($_POST['fb_width'])) {
-                    $socialize_settings['fb_width'] = $_POST['fb_width'];
                 }
                 if (isset($_POST['fb_sendbutton'])) {
                     $socialize_settings['fb_sendbutton'] = $_POST['fb_sendbutton'];
@@ -767,35 +795,11 @@ class SocializeAdmin {
                 if (isset($_POST['socialize_twitter_source'])) {
                     $socialize_settings['socialize_twitter_source'] = $_POST['socialize_twitter_source'];
                 }
-                if (isset($_POST['socialize_topsy_theme'])) {
-                    $socialize_settings['socialize_topsy_theme'] = $_POST['socialize_topsy_theme'];
-                }
-                if (isset($_POST['socialize_topsy_size'])) {
-                    $socialize_settings['socialize_topsy_size'] = $_POST['socialize_topsy_size'];
-                }
                 if (isset($_POST['socialize_twitter_related'])) {
                     $socialize_settings['socialize_twitter_related'] = $_POST['socialize_twitter_related'];
                 }
                 if (isset($_POST['socialize_twitter_count'])) {
                     $socialize_settings['socialize_twitter_count'] = $_POST['socialize_twitter_count'];
-                }
-                if (isset($_POST['socialize_tweetmeme_style'])) {
-                    $socialize_settings['socialize_tweetmeme_style'] = $_POST['socialize_tweetmeme_style'];
-                }
-                if (isset($_POST['socialize_tweetcount_via'])) {
-                    $socialize_settings['socialize_tweetcount_via'] = $_POST['socialize_tweetcount_via'];
-                }
-                if (isset($_POST['socialize_tweetcount_links'])) {
-                    $socialize_settings['socialize_tweetcount_links'] = $_POST['socialize_tweetcount_links'];
-                }
-                if (isset($_POST['socialize_tweetcount_size'])) {
-                    $socialize_settings['socialize_tweetcount_size'] = $_POST['socialize_tweetcount_size'];
-                }
-                if (isset($_POST['socialize_tweetcount_background'])) {
-                    $socialize_settings['socialize_tweetcount_background'] = $_POST['socialize_tweetcount_background'];
-                }
-                if (isset($_POST['socialize_tweetcount_border'])) {
-                    $socialize_settings['socialize_tweetcount_border'] = $_POST['socialize_tweetcount_border'];
                 }
                 if (isset($_POST['reddit_type'])) {
                     $socialize_settings['reddit_type'] = $_POST['reddit_type'];
@@ -815,9 +819,6 @@ class SocializeAdmin {
                 if (isset($_POST['plusone_style'])) {
                     $socialize_settings['plusone_style'] = $_POST['plusone_style'];
                 }
-                if (isset($_POST['digg_size'])) {
-                    $socialize_settings['digg_size'] = $_POST['digg_size'];
-                }
                 if (isset($_POST['yahoo_badgetype'])) {
                     $socialize_settings['yahoo_badgetype'] = $_POST['yahoo_badgetype'];
                 }
@@ -830,13 +831,16 @@ class SocializeAdmin {
                 if (isset($_POST['buffer_counter'])) {
                     $socialize_settings['buffer_counter'] = $_POST['buffer_counter'];
                 }
+                if (isset($_POST['pocket_counter'])) {
+                    $socialize_settings['pocket_counter'] = $_POST['pocket_counter'];
+                }
 
                 echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Socialize settings updated.</p></div>\n";
                 echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
 
                 socializeWP::update_options($socialize_settings);
             }
-        }//updated
+        } //updated
         $socialize_settings = socializeWP::get_options();
         return $socialize_settings;
     }
@@ -844,47 +848,62 @@ class SocializeAdmin {
     //=============================================
     // Contact page options
     //=============================================
-    function socialize_settings_admin() {
+    function socialize_settings_admin()
+    {
         $socialize_settings = self::process_socialize_settings_admin();
+        $socializemeta = explode(',', $socialize_settings['sharemeta']);
+        $socialize_buttons = self::sort_buttons_array($socializemeta);
 
         $wrapped_content = "";
-        $bitly_content = "";
         $facebook_content = "";
         $general_content = "";
-        $og_content = "";
+        $default_content = "";
 
         if (function_exists('wp_nonce_field')) {
-            $bitly_content .= wp_nonce_field('socialize-update-settings_options', '_wpnonce', true, false);
+            $default_content .= wp_nonce_field('socialize-update-settings_options', '_wpnonce', true, false);
         }
 
-        $bitly_content .= '<p>' . __("Bitly Username") . '<br />
-					<input type="text" name="socialize_bitly_name" value="' . $socialize_settings['socialize_bitly_name'] . '" /></p>';
-        $bitly_content .= '<p>' . __("Bitly API Key") . '<br />
-					<input type="text" name="socialize_bitly_key" value="' . $socialize_settings['socialize_bitly_key'] . '" />
-					<small>If you have a Bitly account, you can find your API key <a href="http://bit.ly/a/your_api_key/" target="_blank">here</a>.</small></p>';
-        $wrapped_content .= self::socialize_postbox('socialize-settings-bitly', 'Bitly Settings', $bitly_content);
+        $default_content .= '<p>Rearrange the buttons by <em>clicking</em> and <em>dragging</em></p>';
+        $default_content .= '<div id="socialize-div1"><strong>Above Content Buttons</strong><ul id="inline-sortable">';
+        foreach ($socialize_buttons[0] as $socialize_button) {
+            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
+            $checkbox_class = str_replace("+", "plus", $checkbox_class);
+            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
+        }
+        $default_content .= '</ul></div><div id="socialize-div2"><strong>Below Content Buttons (with CTA text)</strong><br /><ul id="alert-sortable">';
+        foreach ($socialize_buttons[1] as $socialize_button) {
+            $checkbox_class = str_replace(" ", "-", strtolower($socialize_buttons[2][$socialize_button]));
+            $checkbox_class = str_replace("+", "plus", $checkbox_class);
+            $default_content .= '<li class="ui-state-default"><label class="selectit"><div class="socialize-sm-icon-list socialize-settings-buttons-' . $checkbox_class . '-icon"></div><input value="' . $socialize_button . '" type="checkbox" name="socialize_buttons[]" id="post-share-' . $socialize_button . '"' . checked(in_array($socialize_button, $socializemeta), true, false) . '/> <span>' . __($socialize_buttons[2][$socialize_button]) . '</span></label></li>';
+        }
+        $default_content .= '</ul></div><div class="clear"></div>';
 
-        $og_content .= '<p>' . __("Enable Open Graph") . '<br />
-					<input type="checkbox" name="socialize_og" ' . checked($socialize_settings['socialize_og'], 'on', false) . ' />
-					<small>Uncheck this if you do not want to insert <a href="http://developers.facebook.com/docs/opengraph/" target="_blank">open graph</a> meta data into your HTML head.</small></p>';
-        $og_content .= '<p>' . __("Facebook App ID") . '<br />
-				      <input type="text" name="socialize_fb_appid" value="' . $socialize_settings['socialize_fb_appid'] . '" />
-                                      <small>You can set up and get your Facebook App ID <a href="http://www.facebook.com/developers/apps.php" target="_blank">here</a>.</small></p>';
-        $og_content .= '<p>' . __("Facebook Admin IDs") . '<br />
-				      <input type="text" name="socialize_fb_adminid" value="' . $socialize_settings['socialize_fb_adminid'] . '" />
-                                      <small>A comma-separated list of Facebook user IDs. Find it <a href="http://apps.facebook.com/whatismyid" targe="_blank">here</a>.</small></p>';
+        $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default Button Setup', $default_content);
 
+        // $default_content .= '<p><strong>' . __("'Call To Action' Box Text") . '</strong><br />
+        //                         <textarea name="socialize_text" rows="4" style="width:100%;">' . $socialize_settings['socialize_text'] . '</textarea><br />
+        //                         <small>Here you can change your \'Call To Action\' box text. (If you are using a 3rd party site to handle your RSS, like FeedBurner, please make sure any links to your RSS are updated.)<br />
+        //                         There is also an option below that will save your settings and overwrite all individual post and page button settings.</small></p>';
 
+        $default_content = '<p>Configure the default Call To Action (CTA) text for the CTA boxes displayed across your site. Although this text applies site-wide by default, it can be customized on a per-post basis.</p>';
 
-        $og_content .= '<p>' . __("Facebook Page ID") . '<br />
-				      <input type="text" name="socialize_fb_pageid" value="' . $socialize_settings['socialize_fb_pageid'] . '" />
-                                      <small>A Facebook Page ID.</small></p>';
+        ob_start();
+        wp_editor(
+            $socialize_settings['socialize_text'],
+            'socialize_text',
+            [
+                'textarea_name' => 'socialize_text',
+                'textarea_rows' => 5,
+                'media_buttons' => false,
+                'teeny' => true,
+                'quicktags' => true,
+            ]
+        );
+        $default_content .= ob_get_clean();
+        $default_content .= '<p><small>There is also an option on the <a href="' . esc_url(admin_url('options-general.php?page=socialize&tab=tools')) . '">Tools tab</a> that will overwrite all individual post and page button settings with your default settings.</small></p>';
 
-
-
-
-        $wrapped_content .= self::socialize_postbox('socialize-settings-facebook', 'Open Graph Settings', $og_content);
-
+        //$default_content .= '<p>The button below will save your settings and overwrite all individual post and page button settings.</p>';
+        $wrapped_content .= self::socialize_postbox('socialize-settings-default', 'Default CTA Box Text', $default_content);
 
         self::socialize_admin_wrap('Socialize: General Settings', $wrapped_content);
     }
@@ -892,39 +911,31 @@ class SocializeAdmin {
     //=============================================
     // Process contact page form data
     //=============================================
-    function process_socialize_settings_admin() {
+    function process_socialize_settings_admin()
+    {
+
         if (!empty($_POST['socialize_option_submitted'])) {
             if (strstr($_GET['page'], "socialize") && check_admin_referer('socialize-update-settings_options')) {
                 $socialize_settings = socializeWP::get_options();
-                if (isset($_POST['socialize_bitly_name'])) {
-                    $socialize_settings['socialize_bitly_name'] = $_POST['socialize_bitly_name'];
+                $socializemetaarray = array();
+                if (isset($_POST['socialize_buttons'])) {
+                    foreach ($_POST['socialize_buttons'] as $button) {
+                        if (($button > 0)) {
+                            array_push($socializemetaarray, $button);
+                        }
+                    }
                 }
-                if (isset($_POST['socialize_bitly_key'])) {
-                    $socialize_settings['socialize_bitly_key'] = $_POST['socialize_bitly_key'];
-                }
-                if (isset($_POST['socialize_fb_appid'])) {
-                    $socialize_settings['socialize_fb_appid'] = $_POST['socialize_fb_appid'];
-                }
-                if (isset($_POST['socialize_fb_adminid'])) {
-                    $socialize_settings['socialize_fb_adminid'] = $_POST['socialize_fb_adminid'];
-                }
-                if (isset($_POST['socialize_og'])) {
-                    $socialize_settings['socialize_og'] = $_POST['socialize_og'];
-                } else {
-                    $socialize_settings['socialize_og'] = '';
-                }
-                if (isset($_POST['socialize_fb_pageid'])) {
-                    $socialize_settings['socialize_fb_pageid'] = $_POST['socialize_fb_pageid'];
-                } else {
-                    $socialize_settings['socialize_fb_pageid'] = '';
-                }
+                $socializemeta = implode(',', $socializemetaarray);
+                $socialize_settings['sharemeta'] = $socializemeta;
+
+                $socialize_settings['socialize_text'] = stripslashes($_POST['socialize_text']);
 
                 echo "<div id=\"updatemessage\" class=\"updated fade\"><p>Socialize settings updated.</p></div>\n";
                 echo "<script type=\"text/javascript\">setTimeout(function(){jQuery('#updatemessage').hide('slow');}, 3000);</script>";
 
                 socializeWP::update_options($socialize_settings);
             }
-        }//updated
+        } //updated
         $socialize_settings = socializeWP::get_options();
         return $socialize_settings;
     }
@@ -932,11 +943,11 @@ class SocializeAdmin {
     //=============================================
     // Create postbox for admin
     //=============================================
-    function socialize_postbox($id, $title, $content) {
+    function socialize_postbox($id, $title, $content)
+    {
         $postbox_wrap = "";
-        $postbox_wrap .= '<div id="' . $id . '" class="postbox">';
-        $postbox_wrap .= '<div class="handlediv" title="Click to toggle"><br /></div>';
-        $postbox_wrap .= '<h3 class="hndle"><div class="socialize-sm-icon"></div><span>' . $title . '</span></h3>';
+        $postbox_wrap .= '<div id="' . $id . '" class="postbox socialize-admin">';
+        $postbox_wrap .= '<h3><span>' . $title . '</span></h3>';
         $postbox_wrap .= '<div class="inside">' . $content . '</div>';
         $postbox_wrap .= '</div>';
         return $postbox_wrap;
@@ -945,60 +956,61 @@ class SocializeAdmin {
     //=============================================
     // Admin page wrap
     //=============================================
-    function socialize_admin_wrap($title, $content) {
-        ?>
+    function socialize_admin_wrap($title, $content)
+    {
+?>
         <div class="wrap">
             <div class="dashboard-widgets-wrap">
-                <div class="socialize-icon icon32"></div>
                 <h2 class="nav-tab-wrapper socialize-tab-wrapper">
-        <?php
-        $tabs = self::admin_tabs();
+                    <?php
+                    $tabs = self::admin_tabs();
 
-        if (isset($_GET['tab'])) {
-            $current_tab = $_GET['tab'];
-        } else {
-            $current_tab = 'general';
-        }
+                    if (isset($_GET['tab'])) {
+                        $current_tab = $_GET['tab'];
+                    } else {
+                        $current_tab = 'general';
+                    }
 
-        foreach ($tabs as $name => $tab_data) {
-            echo '<a href="' . admin_url('options-general.php?page=socialize&tab=' . $name) . '" class="nav-tab ';
-            if ($current_tab == $name)
-                echo 'nav-tab-active';
-            echo '">' . $tab_data['title'] . '</a>';
-        }
+                    foreach ($tabs as $name => $tab_data) {
+                        echo '<a href="' . admin_url('options-general.php?page=socialize&tab=' . $name) . '" class="nav-tab ';
+                        if ($current_tab == $name)
+                            echo 'nav-tab-active';
+                        echo '">' . $tab_data['title'] . '</a>';
+                    }
 
-        do_action('socialize_settings_tabs');
-        ?>
+                    do_action('socialize_settings_tabs');
+                    ?>
                 </h2>
                 <form method="post" action="">
                     <div id="dashboard-widgets" class="metabox-holder">
-                        <div class="postbox-container" style="width:60%;">
-                            <div class="meta-box-sortables ui-sortable">
-        <?php
-        echo $content;
-        ?>
+                        <div class="postbox-container" id="socialize-settings-container">
+                            <div class="">
+                                <?php
+                                echo $content;
+                                ?>
                                 <p class="submit">
                                     <input type="submit" name="socialize_option_submitted" class="button-primary" value="Save Changes" />
                                 </p>
                             </div>
                         </div>
-                        <div class="postbox-container" style="width:40%;">
-                            <div class="meta-box-sortables ui-sortable">
-        <?php
-        echo self::socialize_show_donate();
-        echo self::socialize_show_plugin_support();
-        echo self::socialize_show_blogfeed();
-        ?>
+                        <div class="postbox-container" id="socialize-sidebar-container">
+                            <div class="">
+                                <?php
+                                echo self::socialize_show_donate();
+                                // echo self::socialize_show_plugin_support();
+                                echo self::socialize_show_blogfeed();
+                                ?>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-        <?php
+<?php
     }
 
-    function sort_buttons_array($socializemeta) {
+    function sort_buttons_array($socializemeta)
+    {
         $inline_buttons_array = SocializeServices::get_button_array('inline');
         $alert_buttons_array = SocializeServices::get_button_array('action');
         $r_socializemeta = array_reverse($socializemeta);
@@ -1006,12 +1018,13 @@ class SocializeAdmin {
         $socialize_buttons = array();
         $socialize_buttons[0] = $inline_buttons_array;
         $socialize_buttons[1] = $alert_buttons_array;
-        
+
         $service_names_array = array();
-        foreach (socializeWP::$socialize_services as $service_name=>$service_data){
-            if(isset($service_data['inline']))
+        $socialize_services = SocializeServices::get_services();
+        foreach ($socialize_services as $service_name => $service_data) {
+            if (isset($service_data['inline']))
                 $service_names_array[$service_data['inline']] = $service_name;
-            if(isset($service_data['action']))
+            if (isset($service_data['action']))
                 $service_names_array[$service_data['action']] = $service_name;
         }
 
@@ -1032,6 +1045,5 @@ class SocializeAdmin {
         }
         return $socialize_buttons;
     }
-
 }
 ?>

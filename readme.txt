@@ -1,91 +1,136 @@
 === Socialize ===
 Contributors: JonBishop
 Donate link: http://www.jonbishop.com/donate/
-Tags:  socialize, bookmark, post, posts, admin, page, digg, facebook, twitter, pinterest, buffer, bufferapp, delicious, digg, seo, button, google, sharing, stumbleupon, posting, saving, sharethis, share, bookmarking, shareaholic, bookmarks menu, social, social bookmarking, reddit, sexybookmarks, mu, sphinn, dzone, meta, linkedin, + one, +1, plus 1, plus one, addthis, addtoany, google plus, buddypress
-Requires at least: 2.7
-Tested up to: 3.4.1
-Stable tag: 2.2
+Tags: social sharing, share buttons, call to action, sharing, social svg
+Requires at least: 5.6
+Tested up to: 6.8.1
+Stable tag: 3.0.1
+License: GPLv2
+Requires PHP: 7.4
 
-Provides an easy way to selectively add actionable social bookmarks to your posts content or below the post in a 'Call To Action' box.
+Easily add social sharing buttons to posts: float beside content or place in a call-to-action box below.
 
 == Description ==
 
-Socialize is an easy way to selectively add actionable social bookmarks to your posts. 
+Socialize makes it easy to add relevant social sharing buttons to your posts and pages without clutter or complexity.
 
-You can add bookmarks in two places:
+You can add sharing buttons in two locations:
+1. Above your post content, left, right, or center aligned (or floating on the left or right)
+2. In a call-to-action (CTA) box below your content
 
-1. Inside the content (aligned left or right)
-1. In a box below the content
+Unlike many other plugins, Socialize provides a panel within the post editor for selecting which buttons appear per post. This helps you display only the most relevant sharing options to encourage engagement.
 
-The plugin was designed to make managing and adding actionable social bookmarks easier and more efficient. Instead of adding new meta keys like other plugins require, there is an additional panel in your posts admin that allows you to select which bookmarks you want to display. This is to encourage people to choose more relevant bookmarks for their posts. By only displaying the more relevant and socially successful posts, you create a form of social proof that might encourage more shares, comments and subscriptions.
+You can also display a customizable CTA box below the content. Use this space to ask readers to comment, share or take another action. You control the message and which buttons appear here, on a per-post basis.
 
-You are also provided with a box at the bottom of your posts that asks readers to subscribe and comment. This text can be edited in the 'Socialize Admin Page' and on individual posts/pages. You can also selectively display social bookmarks in this box the same way you go about inserting bookmarks in content. This is a great place to ask your readers to do something, like check out one of your services or to leave a comment and subscribe.
-
-All buttons and call to action areas can be easily displayed and hidden at will. You can also change the call to action template and even overwrite the default CSS.
+All visual elements, including button layout, floating behavior, and CTA styles, can be modified in the plugin settings. Developers will also find useful actions and filters for extending functionality.
 
 = Features =
-* 12 popular buttons including Pinterest and Buffer
-* Automatically insert Facebook and open graph data into head of site
-* Easily change button order on individual pages
+* Includes 6 core buttons: Twitter, Facebook, LinkedIn, Reddit, Pinterest, Pocket
+* Includes lightweight SVG-style alternatives for each service
+* Display sharing buttons above or below content
+* Supports floating button bar (left or right)
+* Buttons can be aligned left, right, or center above the content (non-floating)
+* Call-to-action section with editable text and layout
 * Custom post type support
-* Lots of display and placement options
-* Bitly integration
-* Actions and filter for developers
+* Developer-friendly with actions and filters
+* Minimal footprint and modernized layout
+
+= Useful Links =
+For more information and additional resources, you can visit the following pages:
+* [Main Plugin Page](https://jonbishop.com/downloads/wordpress-plugins/socialize/)
+* [API Page](https://jonbishop.com/downloads/wordpress-plugins/socialize/socialize-api/)
+
+**Note:** For proper social metadata (e.g., titles, images), I recommend using a dedicated OpenGraph plugin.
 
 == Installation ==
 
 1. Upload the 'socialize' folder to the '/wp-content/plugins/' directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Tweak your settings under 'Socialize' in your settings panel
-1. (optional) Choose some default bookmarks to display on existing posts
-1. Selectively display bookmarks at your will
-
+2. Activate the plugin through the 'Plugins' menu in WordPress
+3. Go to Settings > Socialize to configure your global defaults
+4. Optionally customize buttons or CTA on individual posts or pages
 
 == Frequently Asked Questions ==
 
-= Can I change the background color of the 'Call To Action' box? =
+= Can I change the background or border of the button containers? =  
+Yes. These visual styles can be adjusted from the plugin settings.
 
-Of course your can. It's one of the choice settings available to you in the settings panel.
+= How do I hide sharing buttons on a specific post? =  
+Uncheck all buttons in the 'Socialize' panel for that post.
 
-= What if I don't want bookmarks to show up? =
+= Can I disable the CTA box for a single post? =  
+Yes. Use the "Hide Call To Action Box below this post" checkbox in the post’s Socialize panel.
 
-Load the page/pages in question and make sure there are no checkboxes checked in the 'Socialize' panel of the post.
+= How do I use my own Twitter username? =  
+Set your preferred handle under "Twitter Source" in the settings.
 
-= Can I hide the 'Call To Action' box on specific pages? =
+= What's the difference between floating and static top buttons? =  
+Floating buttons stay visible alongside the content. Static top buttons appear above the content and can be left, center, or right aligned.
 
-Load the page/pages in question and check 'Hide Call To Action Box below this post' in the 'Socialize' panel of the post.
-
-= How do I change @tweetmeme/@backtype to my own Twitter username? =
-
-Change the "Twitter Source" in the Socialize settings panel
-
-= Why are there two Facebook Buttons? =
-
-One is the official Facebook button and the other is the unofficial fbShare.me button. I prefer the fbShare.me button because it displays at full height when there are no shares where the official button shrinks when there are no shares.
-
-= Why do the buttons display in weird locations when I have a lot of buttons displayed? =
-
-Because you can only display as many buttons that will fit within the width of the 'Call To Action' box. Besides, displaying too many buttons defeats the purpose of this plugin. Try to display less than three (3) buttons in each area. This will increase page load time and will look a lot prettier.
-
+= Why don’t all the buttons show up when I select many? =  
+The plugin is optimized for minimalism and speed. Too many buttons can look cluttered and affect load time. Try to limit to three or fewer per section.
 
 == Screenshots ==
 
-1. Some buttons in the content
-2. The box displays below posts
-3. Default button set up, drag and drop to rearrange
-4. The settings panel
-
+1. Scalable Vector Graphics (SVG) Buttons
+2. Official Social Share Buttons
+3. Default Button Setup: Drag and Drop to Rearrange
+4. Per-Page Button and Call-To-Action (CTA) Customizations
 
 == Changelog ==
 
-The current version is 2.2 (tbd)
+The current version is 3.0.1 (2025.05.25)
 
-= 2.2 (tbd)=
-* Added metrics tab
-* Added social sharing metrics table
+= 3.0.1 (2025.05.25) =
+* Fixed cta box default display issue
+* Updated svgs
+* Updated settings page to use SVG icons
+* Cleaned out old icons
+
+= 3.0 (2025.05.20) =
+* Removed OpenGraph integration
+* Removed Bitly integration
+* Removed %%% syntax for manual button placement from CTA templates
+* Removed deprecated services and buttons
+* Added SVG-based versions of supported buttons
+* Added support for floating top buttons with left or right alignment
+* Added option to center-align top button group (non-floating)
+* Added background and border controls for both button sections
+* Updated default display behavior for top buttons (no longer inline with content)
+* Updated CTA default messaging to reflect modern engagement patterns
+* Cleaned up post editor panel UI
+* Cleaned up and optimized CSS
+* Cleaned up and optimized JS
+* Removed unused assets
+* Fixed alignment issues in some themes
+* Confirmed support for core post types and custom post types
+* Verified compatibility with WordPress 6.x
+
+= 2.3 (2013.10.01) =
+* Removed Digg button
+* Fixed Pinterest button
+* Added rules to fix new Pinterest counter values
+* Added Bitcoin as a donation option
+* Added Pocket button
+* Make Socialize admin responsive
+
+= 2.2.3 (2013.02.09) =
+* Added strip_tags() to og:title
+
+= 2.2.2 (2013.02.09) =
+* Fixed a few bugs in admin
+
+= 2.2.1 (2012.09.26) =
+* Fixed saving of default CTA
+
+= 2.2 (2012.08.09) =
 * Added shortcode support
+* Global update old posts/pages settings share settings
+* Floating share bar
+* Cleaned up admin
+* Expanded API
+* Cleaned up button styles
 
-= 2.1 (2012.06.16)=
+= 2.1 (2012.07.30) =
 * Added Pinterest
 * Removed Google Buzz
 * Changed location of settings and switched to tabbed navigation
@@ -200,3 +245,8 @@ The current version is 2.2 (tbd)
 
 = 0.1 =
 * Plugin released
+
+== Upgrade Notice ==
+
+= 3.0 =
+Upgrade to 3.0 for modern SVG buttons, enhanced floating options, custom CTA styles, and overall optimizations. Benefit from improved UI, support for WordPress 6.x, and removed deprecated features.
